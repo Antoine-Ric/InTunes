@@ -11,14 +11,16 @@ Implementation scope follows the supplied music playlist MVP plan. The app inclu
 - npm audit: zero reported dependency vulnerabilities at implementation time.
 - Six browser integration tests passing against the real Spring Boot server and mocked provider HTTP services, including desktop/mobile results, failure/retry behavior, and automated WCAG A/AA checks of the form and results.
 - The complete reusable cloud setup script executed successfully, including frozen dependency installation and all checks.
+- Live MusicBrainz reached through the Java client's platform proxy/TLS configuration and returned five real recordings for the manual sample request. Last.fm was mocked for this additional check; the complete live pipeline is still unverified.
 
 These checks verify development and the fixture-backed vertical slice. The live-provider first manual test remains pending external settings.
 
 ## External prerequisites
 
-- Environment network policy currently blocks MusicBrainz. Required music-provider hosts have been saved in the environment draft.
+- MusicBrainz access now succeeds. Required music-provider hosts have been saved in the environment draft.
 - `LASTFM_API_KEY` is not configured. A secure requirement has been saved; enter a real key in environment settings, never in chat or source.
 - The first real catalog test remains pending these settings. Mocked provider tests do not establish live recommendation quality.
+- GitHub Git read/push access works and the feature branch is published. GitHub API access is denied, so automatic pull-request creation remains unavailable. Open the pull-request link for `feat/playlist-mvp` on GitHub to create its review.
 
 ## Deliberate limits
 
