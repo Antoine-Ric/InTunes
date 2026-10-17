@@ -4,7 +4,28 @@ Describe a playlist, set boundaries, and discover the first **five real songs**.
 
 ## Run locally
 
-Prerequisites: **JDK 21**, **Node.js 24 LTS**, Python 3 for browser-test fixtures, and a Last.fm API key from [Last.fm API accounts](https://www.last.fm/api/account/create). Maven 3.9.16 is bootstrapped by the checksum-pinned wrapper. Frontend versions are pinned in `package-lock.json`.
+On macOS or Linux, start from the repository root with Python 3.11+, curl, and tar installed:
+
+```sh
+bash scripts/setup-local.sh
+bash scripts/dev.sh --demo
+```
+
+Open **http://127.0.0.1:5173**, choose **After-hours drive**, and click **Find songs**. Demo mode uses a fixed set of test songs through the real backend; no API key is required. Electronic prompts deliberately simulate a provider failure, and disabling explicit music demonstrates insufficient clean data. A visible banner identifies demo mode. Demo fixtures use port 9012, separate from browser tests.
+
+Setup downloads checksum-verified **JDK 21** and **Node.js 24 LTS** when needed into ignored `.local/tools/`, installs frozen dependencies, verifies/builds the backend, builds the frontend, and installs Playwright Chromium. Caches stay under ignored `.cache/`. It does not change system Java, Node, or shell configuration. On Linux, Playwright may additionally require system browser libraries (`npx playwright install --with-deps chromium`).
+
+For live discovery, edit the ignored `.env` created by setup and set `LASTFM_API_KEY` using your key from [Last.fm API accounts](https://www.last.fm/api/account/create), then restart with:
+
+```sh
+bash scripts/dev.sh
+```
+
+Live mode loads `.env` as trusted shell configuration. Quote values containing spaces. The key is used by the backend; never put it in a `VITE_*` variable. Without a key, the UI and health endpoint work, but suggestions return a configuration error. Demo mode is only enabled by the explicit `--demo` flag; live mode never falls back to fixtures.
+
+For manual tool commands in Bash or Zsh, run `source scripts/local-env.sh` first to select the project runtimes. Maven 3.9.16 is bootstrapped by the checksum-pinned wrapper. Frontend versions are pinned in `package-lock.json`.
+
+If you already have JDK 21 and a supported Node version, you can also install manually:
 
 1. Install and build:
 
@@ -17,7 +38,7 @@ Prerequisites: **JDK 21**, **Node.js 24 LTS**, Python 3 for browser-test fixture
    cd ..
    ```
 
-2. Supply `LASTFM_API_KEY` securely in the backend process environment. `.env.example` documents the variable; scripts do **not** automatically load `.env`. Never commit or put this key in a `VITE_*` variable.
+2. Set `LASTFM_API_KEY` in the ignored root `.env` or the backend process environment. `.env.example` documents the variable. Never commit or put this key in a `VITE_*` variable.
 
 3. From the repository root, run:
 
@@ -78,7 +99,16 @@ MusicBrainz requests include an identifying User-Agent, are serialized at interv
 
 ## Checks
 
+After local setup, run all checks (backend, lint, unit tests, frontend build, and browser tests) with:
+
 ```sh
+bash scripts/check-local.sh
+```
+
+Or run checks individually:
+
+```sh
+source scripts/local-env.sh
 cd backend && ./mvnw --batch-mode --no-transfer-progress verify
 cd ../frontend
 npm ci
@@ -93,7 +123,7 @@ In the cloud, source `scripts/cloud-env.sh` first and pass `-s /workspace/.cache
 
 - Backend tests cover service selection, filtering, wildcard boundaries, validation, controllers, credential-safe errors, and both external response mappings.
 - Frontend tests cover form controls, request payloads, loading, five-song rendering, retries/errors, response validation, and unsafe external links.
-- Playwright starts the **actual Spring Boot server**, Vite, and isolated Python HTTP fixtures for both music providers. It exercises desktop/mobile results, strict explicit policy, upstream failures/retry, API validation, and automated axe WCAG A/AA checks. These tests need no real API key and **do not prove live provider access**. Fixtures run on port 9011; test API on 8081; test UI on 4174. There is no fixture fallback in normal startup.
+- Playwright starts the **actual Spring Boot server**, Vite, and isolated Python HTTP fixtures for both music providers. It exercises desktop/mobile results, strict explicit policy, upstream failures/retry, API validation, and automated axe WCAG A/AA checks. These tests need no real API key and **do not prove live provider access**. Fixtures run on port 9011; test API on 8081; test UI on 4174. There is no fixture fallback in live startup.
 
 CI runs these checks for pull requests and feature/fix/chore branches. See [CONTRIBUTING.md](CONTRIBUTING.md) for the branching strategy and recommended protections.
 

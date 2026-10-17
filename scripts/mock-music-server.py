@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-"""Isolated HTTP fixtures for tests only. Never used as a production fallback."""
+"""HTTP fixtures for tests and explicit local demo mode; never a production fallback."""
 import json
+import os
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, urlsplit
 
@@ -57,4 +58,4 @@ class Handler(BaseHTTPRequestHandler):
 
 
 if __name__ == "__main__":
-    ThreadingHTTPServer(("127.0.0.1", 9011), Handler).serve_forever()
+    ThreadingHTTPServer(("127.0.0.1", int(os.environ.get("FIXTURE_PORT", "9011"))), Handler).serve_forever()

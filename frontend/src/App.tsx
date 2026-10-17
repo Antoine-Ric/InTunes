@@ -141,6 +141,12 @@ export default function App() {
         </span>
       </header>
       <main>
+        {import.meta.env.VITE_DEMO_MODE === "true" && (
+          <p role="status">
+            Demo mode · Fixed sample songs. Try “After-hours drive” to explore
+            results. Electronic prompts simulate a provider error.
+          </p>
+        )}
         <section className="hero" aria-labelledby="hero-title">
           <div>
             <p className="eyebrow">
