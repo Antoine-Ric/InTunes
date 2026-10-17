@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: situnes-postgres
+    environment:
+      POSTGRES_DB: situnes
+      POSTGRES_USER: situnes
+      POSTGRES_PASSWORD: situnes
+    ports:
+      - "5432:5432"
+    volumes:
+      - situnes-pgdata:/var/lib/postgresql/data
+
+volumes:
+  situnes-pgdata:

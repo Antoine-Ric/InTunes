@@ -1,0 +1,29 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/situnes
+    username: situnes
+    password: situnes
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+situnes:
+  spotify:
+    # Register an app at https://developer.spotify.com/dashboard, then export:
+    #   export SPOTIFY_CLIENT_ID=... SPOTIFY_CLIENT_SECRET=...
+    # Used for: track metadata, album art, popularity, release dates (client-credentials flow).
+    # NOTE: audio-features and 30s previews are dead for new apps (killed Nov 2024).
+    client-id: ${SPOTIFY_CLIENT_ID:}
+    client-secret: ${SPOTIFY_CLIENT_SECRET:}
+  itunes:
+    # No key needed. https://itunes.apple.com/search?term=...&entity=song -> previewUrl
+    # Used for: 30-second song previews in the matchup arena.
+    base-url: https://itunes.apple.com
+  matchup:
+    rounds-per-genre: 16
+    elo-k-factor: 32
+    elo-start-rating: 1500.0

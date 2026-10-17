@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your profile — InTunes</title>
+    <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<header><nav><a href="/">InTunes</a> | <a href="/genres">Start</a> | <a href="/explore">Explore</a></nav></header>
+<main>
+    <!-- TODO: bind ${profile.archetypeName}, ${topSongs}, ${pinnedReply} -->
+    <p class="eyebrow">Your music profile</p>
+    <h1>Boom Bap Archaeologist</h1><!-- th:text=${profile.archetypeName} -->
+    <h2>Top songs</h2>
+    <ol>
+        <li>Song one</li><!-- th:each over ${topSongs} -->
+    </ol>
+    <h2>Pinned</h2>
+    <blockquote>Your pinned comment lives here.</blockquote><!-- th:if=${pinnedReply} -->
+    <a href="/community/hiphop_deep_90s"><button>Meet your community</button></a>
+    <button>Share my profile</button><!-- TODO: share card -->
+</main>
+</body>
+</html>
