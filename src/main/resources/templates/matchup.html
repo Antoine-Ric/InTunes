@@ -1,34 +1,112 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Matchup — InTunes</title>
-    <script src="https://unpkg.com/htmx.org@2.0.4"></script>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
-</head>
+<head th:replace="~{fragments/layout :: head('Matchup arena')}"></head>
 <body>
-<header><nav><a href="/">InTunes</a> | <a href="/genres">Start</a> | <a href="/explore">Explore</a></nav></header>
-<main>
-    <!-- TODO: bind ${pair.round}/${pair.totalRounds}, ${pair.songA}, ${pair.songB} -->
-    <p>Round <span>1</span> of <span>16</span></p>
-    <h1>Which one?</h1>
-    <div class="arena">
-        <div class="song-card">
-            <img src="" alt="album art"><!-- th:src=${pair.songA.albumArtUrl} -->
-            <h2>Song A</h2><!-- th:text=${pair.songA.title} - ${pair.songA.artist} -->
-            <audio controls src=""></audio><!-- th:src=${pair.songA.previewUrl} -->
-            <button>Pick this</button><!-- hx-post /api/matchups/vote -->
-        </div>
-        <div class="vs">VS</div>
-        <div class="song-card">
-            <img src="" alt="album art">
-            <h2>Song B</h2>
-            <audio controls src=""></audio>
-            <button>Pick this</button>
-        </div>
+<div class="app">
+  <div th:replace="~{fragments/layout :: topnav('arena')}"></div>
+
+  <!-- Live data: PageController#matchup should add "pair" (MatchupPair: songA/songB with
+       id, title, artist, albumArtUrl, previewUrl, releaseYear, popularity; round; totalRounds)
+       and "genre" (key) / "genreName" (display). When pair is absent, demo mode renders. -->
+  <main class="view on">
+    <span class="kicker">Step 2 · Matchup arena ·
+      <span th:text="${genreName != null ? genreName : 'Hip-Hop'}">Hip-Hop</span></span>
+    <h2 class="big" style="font-size:clamp(24px,3.4vw,34px)">One has to go. <em>Which one stays?</em></h2>
+
+    <div class="arena-head">
+      <span class="round">Round <span id="round-num" th:text="${pair != null ? pair.round : '1'}">1</span>
+        of <th:block th:if="${pair != null}"><span th:text="${pair.totalRounds}">16</span></th:block><th:block th:if="${pair == null}">6 <span class="dim">(16 in the real run)</span></th:block></span>
+      <div class="bar"><i id="round-bar" style="width:8%"></i></div>
+      <span class="lean">Your taste so far leans: <b id="lean-text">too early to call</b></span>
     </div>
-    <!-- TODO: on vote, HTMX swaps in the next pair; on completion redirect to /profile -->
-</main>
+
+    <!-- Demo pair (no backend data yet): JS fills these in and runs 6 demo rounds. -->
+    <div th:if="${pair == null}" class="versus" id="versus" data-mode="demo" data-genre="hiphop">
+      <div class="song" id="song-a">
+        <div class="cover c1" id="cover-a"><span class="pop" id="pop-a"></span><span class="yr" id="yr-a"></span></div>
+        <h3 id="title-a"></h3>
+        <div class="artist" id="artist-a"></div>
+        <div class="playrow">
+          <button class="playbtn" data-play="a" aria-label="Play 30 second preview">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          </button>
+          <div class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <span class="ptime">0:30 preview</span>
+        </div>
+        <button class="pickbtn" data-pick="a">Keep this one</button>
+      </div>
+      <div class="vs-badge">VS</div>
+      <div class="song" id="song-b">
+        <div class="cover c2" id="cover-b"><span class="pop" id="pop-b"></span><span class="yr" id="yr-b"></span></div>
+        <h3 id="title-b"></h3>
+        <div class="artist" id="artist-b"></div>
+        <div class="playrow">
+          <button class="playbtn" data-play="b" aria-label="Play 30 second preview">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          </button>
+          <div class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <span class="ptime">0:30 preview</span>
+        </div>
+        <button class="pickbtn" data-pick="b">Keep this one</button>
+      </div>
+    </div>
+
+    <!-- Live pair from MatchupService. Votes POST to /api/matchups/vote via arena.js. -->
+    <div th:if="${pair != null}" class="versus" id="versus" data-mode="live"
+         th:attr="data-genre=${genre != null ? genre : 'hiphop'}">
+      <div class="song" id="song-a" th:attr="data-song-id=${pair.songA.id}">
+        <div class="cover c1" id="cover-a"
+             th:style="${pair.songA.albumArtUrl != null} ? 'background-image:url(' + ${pair.songA.albumArtUrl} + ')' : ''">
+          <span class="pop" id="pop-a" th:text="${pair.songA.popularity != null and pair.songA.popularity >= 70 ? 'CHART HIT' : 'DEEP CUT'}">DEEP CUT</span>
+          <span class="yr" id="yr-a" th:text="${pair.songA.releaseYear}">1993</span>
+        </div>
+        <h3 id="title-a" th:text="${pair.songA.title}">Song A</h3>
+        <div class="artist" id="artist-a" th:text="${pair.songA.artist}">Artist</div>
+        <div class="playrow">
+          <button class="playbtn" data-play="a" aria-label="Play 30 second preview">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          </button>
+          <div class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <span class="ptime">0:30 preview</span>
+          <audio th:if="${pair.songA.previewUrl != null}" th:src="${pair.songA.previewUrl}" preload="none"></audio>
+        </div>
+        <button class="pickbtn" data-pick="a">Keep this one</button>
+      </div>
+      <div class="vs-badge">VS</div>
+      <div class="song" id="song-b" th:attr="data-song-id=${pair.songB.id}">
+        <div class="cover c2" id="cover-b"
+             th:style="${pair.songB.albumArtUrl != null} ? 'background-image:url(' + ${pair.songB.albumArtUrl} + ')' : ''">
+          <span class="pop" id="pop-b" th:text="${pair.songB.popularity != null and pair.songB.popularity >= 70 ? 'CHART HIT' : 'DEEP CUT'}">CHART HIT</span>
+          <span class="yr" id="yr-b" th:text="${pair.songB.releaseYear}">2018</span>
+        </div>
+        <h3 id="title-b" th:text="${pair.songB.title}">Song B</h3>
+        <div class="artist" id="artist-b" th:text="${pair.songB.artist}">Artist</div>
+        <div class="playrow">
+          <button class="playbtn" data-play="b" aria-label="Play 30 second preview">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          </button>
+          <div class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <span class="ptime">0:30 preview</span>
+          <audio th:if="${pair.songB.previewUrl != null}" th:src="${pair.songB.previewUrl}" preload="none"></audio>
+        </div>
+        <button class="pickbtn" data-pick="b">Keep this one</button>
+      </div>
+    </div>
+
+    <div class="arena-foot">
+      <span class="lean">Every pick moves both songs' <b>Elo ratings</b>: winners climb, losers fall. Sixteen rounds is enough for a stable ranking.</span>
+      <button class="btn ghost small" id="skip-btn">Skip this pair</button>
+    </div>
+    <div class="reveal-box" id="reveal-box">
+      <h3>That is a profile.</h3>
+      <p id="reveal-text">Your picks leaned old-school and underground, and the Elo engine has a name for that.</p>
+      <a class="btn" th:href="@{/profile}">Reveal my music profile →</a>
+    </div>
+  </main>
+
+  <div th:replace="~{fragments/layout :: footer}"></div>
+</div>
+<script th:src="@{/js/app.js}"></script>
+<script th:src="@{/js/arena.js}"></script>
 </body>
 </html>

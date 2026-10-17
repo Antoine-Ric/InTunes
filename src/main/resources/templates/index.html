@@ -1,23 +1,52 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>InTunes — Find your sound</title>
-    <script src="https://unpkg.com/htmx.org@2.0.4"></script>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
-</head>
+<head th:replace="~{fragments/layout :: head('Home')}"></head>
 <body>
-<header><nav><a href="/">InTunes</a> | <a href="/genres">Start</a> | <a href="/explore">Explore</a></nav></header>
-<main>
-    <h1>Find your sound.</h1>
-    <p>Head-to-head song battles build your music profile, then we match you with your people.</p>
-    <ol>
-        <li>Pick a genre</li>
-        <li>Vote in 16 rounds of this-vs-that</li>
-        <li>Get your profile name and meet your community</li>
-    </ol>
-    <a href="/genres"><button>Start matching</button></a>
-</main>
+<div class="app">
+  <div th:replace="~{fragments/layout :: topnav('home')}"></div>
+
+  <main class="view on">
+    <span class="kicker">Welcome back, Ricardi</span>
+    <h2 class="big">Find your sound.<br>Find <em>your people.</em></h2>
+    <p class="lede">InTunes builds your music profile from head-to-head song matchups: no quizzes, no typing your favorites. Just pick the song you would keep. Sixteen picks later, you get a named profile and a community of people who hear music like you do.</p>
+    <div class="row" style="margin-bottom:22px">
+      <a class="btn" th:href="@{/genres}">Start a matchup run</a>
+      <a class="btn ghost" th:href="@{/explore}">Browse communities</a>
+    </div>
+    <div class="home-grid">
+      <div class="panel">
+        <h3>Your taste so far</h3>
+        <p>One genre profile unlocked. Two more runs and your cross-genre identity starts to form.</p>
+        <div class="progress-line">
+          <div class="lab"><span>Hip-Hop · Boom Bap Archaeologist</span><span>Complete</span></div>
+          <div class="bar"><i style="width:100%"></i></div>
+        </div>
+        <div class="progress-line">
+          <div class="lab"><span>R&amp;B · in progress</span><span>9 / 16 rounds</span></div>
+          <div class="bar"><i style="width:56%"></i></div>
+        </div>
+        <div class="genre-mini">
+          <a class="chip" th:href="@{/genres}"><i style="background:var(--lime)"></i>Run R&amp;B next</a>
+          <a class="chip" th:href="@{/profile}"><i style="background:var(--coral)"></i>View my archetype card</a>
+        </div>
+      </div>
+      <div class="panel">
+        <h3>Your community today</h3>
+        <p><b style="color:var(--app-ink)">Boom Bap Archaeologists</b>, 3 new posts since yesterday, including a heated Nas vs. Jay-Z thread.</p>
+        <div class="stat-row">
+          <div class="stat"><b>1,248</b><span>Members</span></div>
+          <div class="stat"><b>42</b><span>Posts / wk</span></div>
+          <div class="stat"><b>3</b><span>Your pins</span></div>
+        </div>
+        <div class="row" style="margin-top:16px">
+          <a class="btn small" th:href="@{/community/hiphop_deep_90s}">Open the board</a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div th:replace="~{fragments/layout :: footer}"></div>
+</div>
+<script th:src="@{/js/app.js}"></script>
 </body>
 </html>
