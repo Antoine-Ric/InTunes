@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pick a genre — InTunes</title>
+    <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<header><nav><a href="/">InTunes</a> | <a href="/genres">Start</a> | <a href="/explore">Explore</a></nav></header>
+<main>
+    <h1>Pick your arena</h1>
+    <!-- TODO: th:each over ${genres}; each card links to /matchup?genre=${g.key} -->
+    <div class="genre-grid">
+        <a href="/matchup?genre=hiphop">Hip-Hop</a>
+        <a href="/matchup?genre=rnb">R&amp;B</a>
+        <a href="/matchup?genre=afrobeats">Afrobeats</a>
+        <a href="/matchup?genre=pop">Pop</a>
+        <a href="/matchup?genre=rock">Rock</a>
+        <a href="/matchup?genre=latin">Latin</a>
+    </div>
+</main>
+</body>
+</html>

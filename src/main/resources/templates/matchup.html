@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matchup — InTunes</title>
+    <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<header><nav><a href="/">InTunes</a> | <a href="/genres">Start</a> | <a href="/explore">Explore</a></nav></header>
+<main>
+    <!-- TODO: bind ${pair.round}/${pair.totalRounds}, ${pair.songA}, ${pair.songB} -->
+    <p>Round <span>1</span> of <span>16</span></p>
+    <h1>Which one?</h1>
+    <div class="arena">
+        <div class="song-card">
+            <img src="" alt="album art"><!-- th:src=${pair.songA.albumArtUrl} -->
+            <h2>Song A</h2><!-- th:text=${pair.songA.title} - ${pair.songA.artist} -->
+            <audio controls src=""></audio><!-- th:src=${pair.songA.previewUrl} -->
+            <button>Pick this</button><!-- hx-post /api/matchups/vote -->
+        </div>
+        <div class="vs">VS</div>
+        <div class="song-card">
+            <img src="" alt="album art">
+            <h2>Song B</h2>
+            <audio controls src=""></audio>
+            <button>Pick this</button>
+        </div>
+    </div>
+    <!-- TODO: on vote, HTMX swaps in the next pair; on completion redirect to /profile -->
+</main>
+</body>
+</html>

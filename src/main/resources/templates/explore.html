@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explore — InTunes</title>
+    <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<header><nav><a href="/">InTunes</a> | <a href="/genres">Start</a> | <a href="/explore">Explore</a></nav></header>
+<main>
+    <h1>Explore communities</h1>
+    <!-- TODO: th:each over ${communities}; card links to /community/{key} -->
+    <div class="community-grid">
+        <a href="/community/hiphop_deep_90s">Boom Bap Archaeologists</a>
+        <a href="/community/hiphop_mainstream_now">Club Architects</a>
+    </div>
+</main>
+</body>
+</html>
