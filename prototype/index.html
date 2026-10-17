@@ -1,0 +1,909 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="color-scheme" content="light dark" />
+<link rel="icon" href="data:," />
+<title>InTunes — Page Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,500;0,650;0,800;0,900;1,700&family=Archivo+Narrow:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    color-scheme: light dark;
+    --bg:#f4f1ea;
+    --bg-2:#ece8de;
+    --surface:#fffdf8;
+    --surface-2:#f7f4ec;
+    --ink:#16150f;
+    --ink-2:#55534a;
+    --ink-3:#8a877c;
+    --line:#ddd8ca;
+    --lime:#b8e62e;
+    --lime-deep:#6f9c12;
+    --lime-ink:#1d2a05;
+    --coral:#ff5c33;
+    --coral-deep:#d63d1a;
+    --teal:#0f766e;
+    --amber:#d97706;
+    --app-bg:#131310;
+    --app-surface:#1c1c18;
+    --app-surface-2:#26261f;
+    --app-ink:#f3f1e7;
+    --app-ink-2:#b9b6a8;
+    --app-line:#35352c;
+    --radius:18px;
+    --shadow:0 18px 40px rgba(22,21,15,.14);
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#0d0d0b;
+      --bg-2:#121210;
+      --surface:#1a1a16;
+      --surface-2:#22221c;
+      --ink:#f3f1e7;
+      --ink-2:#b9b6a8;
+      --ink-3:#84817a;
+      --line:#333329;
+      --lime-deep:#b8e62e;
+      --shadow:0 18px 40px rgba(0,0,0,.45);
+    }
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:"Archivo",system-ui,-apple-system,"Segoe UI",sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  button{font-family:inherit;cursor:pointer}
+  a{color:inherit}
+
+  /* ---------- Prototype chrome ---------- */
+  .proto-wrap{max-width:1180px;margin:0 auto;padding:22px 16px 56px}
+  .proto-head{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end;justify-content:space-between;margin-bottom:14px}
+  .proto-head h1{font-size:clamp(26px,4vw,40px);line-height:.98;font-weight:900;letter-spacing:-.02em;margin:0}
+  .proto-head h1 em{font-style:italic;font-weight:700;color:var(--lime-deep)}
+  .proto-head p{margin:6px 0 0;color:var(--ink-2);font-size:15px;line-height:1.5;max-width:560px}
+  .proto-badge{display:inline-flex;align-items:center;gap:8px;background:var(--ink);color:var(--bg);border-radius:999px;padding:7px 13px;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+  .proto-badge i{width:8px;height:8px;border-radius:50%;background:var(--lime);display:block}
+
+  /* Flow map */
+  .flow{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin-bottom:16px;box-shadow:var(--shadow)}
+  .flow h2{margin:0 0 4px;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);font-weight:800}
+  .flow p{margin:0 0 14px;font-size:13.5px;color:var(--ink-2)}
+  .flow-track{display:flex;align-items:stretch;gap:0;flex-wrap:wrap}
+  .flow-node{flex:1 1 120px;min-width:118px;text-align:left;background:var(--surface-2);border:1.5px solid var(--line);border-radius:14px;padding:11px 12px;transition:border-color .15s,background .15s}
+  .flow-node:hover{border-color:var(--lime-deep)}
+  .flow-node.active{border-color:var(--lime-deep);background:color-mix(in srgb,var(--lime) 16%,var(--surface-2))}
+  .flow-node b{display:block;font-size:14px;font-weight:800}
+  .flow-node span{display:block;font-size:12px;color:var(--ink-2);margin-top:2px;line-height:1.35}
+  .flow-node .step{font-size:11px;font-weight:800;letter-spacing:.08em;color:var(--lime-deep);text-transform:uppercase}
+  .flow-arrow{align-self:center;padding:0 5px;color:var(--ink-3);font-weight:900;flex:0 0 auto}
+  .flow-loop{margin-top:12px;font-size:13px;color:var(--ink-2);background:var(--surface-2);border:1px dashed var(--line);border-radius:10px;padding:9px 12px}
+  .flow-loop b{color:var(--ink)}
+
+  /* ---------- App frame ---------- */
+  .app{background:var(--app-bg);color:var(--app-ink);border-radius:26px;overflow:hidden;box-shadow:0 30px 70px rgba(0,0,0,.35);border:1px solid #000}
+  .app-top{display:flex;align-items:center;gap:14px;padding:14px 18px;border-bottom:1px solid var(--app-line);flex-wrap:wrap}
+  .wordmark{font-weight:900;font-size:21px;letter-spacing:-.02em;color:var(--app-ink);display:flex;align-items:center;gap:9px}
+  .wordmark .disc{width:26px;height:26px;border-radius:50%;background:var(--lime);position:relative;flex:0 0 auto}
+  .wordmark .disc::after{content:"";position:absolute;inset:9px;border-radius:50%;background:var(--app-bg)}
+  .wordmark .disc::before{content:"";position:absolute;inset:3px;border-radius:50%;border:1.5px solid rgba(0,0,0,.25);z-index:1}
+  .app-nav{display:flex;gap:4px;flex-wrap:wrap;margin-left:auto}
+  .app-nav button{background:transparent;border:1px solid transparent;color:var(--app-ink-2);font-size:13.5px;font-weight:700;padding:8px 13px;border-radius:999px}
+  .app-nav button:hover{color:var(--app-ink)}
+  .app-nav button.active{background:var(--lime);color:var(--lime-ink)}
+  .avatar-dot{width:34px;height:34px;border-radius:50%;background:var(--coral);color:#fff;font-weight:900;font-size:13px;display:flex;align-items:center;justify-content:center;border:2px solid var(--app-surface-2);flex:0 0 auto}
+  .view{display:none;padding:26px 22px 34px;animation:fadein .25s ease}
+  .view.on{display:block}
+  @keyframes fadein{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion: reduce){.view{animation:none}}
+
+  .kicker{font-family:"Archivo Narrow",sans-serif;font-size:12.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--lime)}
+  .view h2.big{font-size:clamp(28px,4.4vw,44px);font-weight:900;letter-spacing:-.02em;line-height:1.02;margin:8px 0 10px}
+  .view h2.big em{font-style:italic;color:var(--lime)}
+  .lede{color:var(--app-ink-2);font-size:15.5px;line-height:1.55;max-width:620px;margin:0 0 20px}
+  .btn{display:inline-flex;align-items:center;gap:8px;border:none;border-radius:999px;padding:13px 22px;font-size:15px;font-weight:800;background:var(--lime);color:var(--lime-ink)}
+  .btn:hover{filter:brightness(1.06)}
+  .btn.ghost{background:transparent;color:var(--app-ink);border:1.5px solid var(--app-line)}
+  .btn.coral{background:var(--coral);color:#fff}
+  .btn.small{padding:9px 16px;font-size:13.5px}
+  .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+
+  /* Home */
+  .home-grid{display:grid;grid-template-columns:1.25fr .75fr;gap:16px}
+  @media(max-width:820px){.home-grid{grid-template-columns:1fr}}
+  .panel{background:var(--app-surface);border:1px solid var(--app-line);border-radius:var(--radius);padding:20px}
+  .panel h3{margin:0 0 6px;font-size:17px;font-weight:800}
+  .panel p{margin:0;color:var(--app-ink-2);font-size:14px;line-height:1.55}
+  .progress-line{margin-top:16px}
+  .progress-line .lab{display:flex;justify-content:space-between;font-size:13px;font-weight:700;margin-bottom:6px}
+  .progress-line .lab span:last-child{color:var(--lime)}
+  .bar{height:9px;border-radius:99px;background:var(--app-surface-2);overflow:hidden}
+  .bar i{display:block;height:100%;background:var(--lime);border-radius:99px}
+  .genre-mini{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+  .chip{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--app-line);background:var(--app-surface-2);color:var(--app-ink);border-radius:999px;padding:7px 13px;font-size:13px;font-weight:700}
+  .chip i{width:9px;height:9px;border-radius:3px;display:block}
+  .stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px}
+  .stat{background:var(--app-surface-2);border-radius:12px;padding:13px;text-align:center}
+  .stat b{display:block;font-size:22px;font-weight:900}
+  .stat span{font-size:11.5px;color:var(--app-ink-2);font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+
+  /* Genre select */
+  .genre-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}
+  .genre-card{text-align:left;background:var(--app-surface);border:1.5px solid var(--app-line);border-radius:var(--radius);padding:18px;color:var(--app-ink);transition:border-color .15s,transform .15s;width:100%}
+  .genre-card:hover{border-color:var(--lime);transform:translateY(-2px)}
+  .genre-card .swatch{height:74px;border-radius:12px;margin-bottom:14px;position:relative;overflow:hidden}
+  .genre-card h3{margin:0 0 4px;font-size:19px;font-weight:900}
+  .genre-card p{margin:0 0 12px;font-size:13px;color:var(--app-ink-2);line-height:1.45}
+  .genre-card .meta{display:flex;justify-content:space-between;font-size:12px;font-weight:700;color:var(--app-ink-2)}
+  .genre-card .meta b{color:var(--lime)}
+  .sw-hiphop{background:repeating-linear-gradient(45deg,#b8e62e 0 14px,#8fbf1d 14px 28px)}
+  .sw-rnb{background:radial-gradient(circle at 30% 30%,#ffb59d,#ff5c33 65%)}
+  .sw-pop{background:repeating-radial-gradient(circle at 80% 20%,#ffd23e 0 10px,#f5a623 10px 20px)}
+  .sw-rock{background:linear-gradient(135deg,#57534a 55%,#26261f 55%)}
+  .sw-electro{background:repeating-linear-gradient(90deg,#2dd4bf 0 8px,#0f766e 8px 16px)}
+
+  /* Arena */
+  .arena-head{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:18px}
+  .arena-head .round{font-weight:900;font-size:15px}
+  .arena-head .round span{color:var(--lime)}
+  .arena-head .bar{flex:1;min-width:140px}
+  .lean{font-size:13px;color:var(--app-ink-2)}
+  .lean b{color:var(--app-ink)}
+  .versus{display:grid;grid-template-columns:1fr auto 1fr;gap:14px;align-items:stretch}
+  @media(max-width:760px){.versus{grid-template-columns:1fr}.vs-badge{margin:0 auto}}
+  .song{background:var(--app-surface);border:2px solid var(--app-line);border-radius:20px;padding:16px;text-align:left;color:var(--app-ink);width:100%;transition:border-color .15s,transform .15s;display:flex;flex-direction:column}
+  .song:hover{border-color:var(--lime)}
+  .song.picked{border-color:var(--lime);background:color-mix(in srgb,var(--lime) 10%,var(--app-surface))}
+  .song.faded{opacity:.45}
+  .cover{height:170px;border-radius:14px;position:relative;overflow:hidden;margin-bottom:14px;flex:0 0 auto}
+  .cover::after{content:"";position:absolute;right:-34px;top:50%;transform:translateY(-50%);width:150px;height:150px;border-radius:50%;background:radial-gradient(circle,#111 26%,#26261f 27%,#111 42%,#26261f 43%,#111 60%);opacity:.85}
+  .cover .yr{position:absolute;left:12px;bottom:12px;background:rgba(0,0,0,.72);color:#fff;font-size:12px;font-weight:800;padding:5px 10px;border-radius:999px;z-index:2}
+  .cover .pop{position:absolute;left:12px;top:12px;background:rgba(0,0,0,.72);color:var(--lime);font-size:11.5px;font-weight:800;padding:5px 10px;border-radius:999px;z-index:2;letter-spacing:.03em}
+  .c1{background:linear-gradient(140deg,#f2c230,#d97706)}
+  .c2{background:linear-gradient(140deg,#3f6212,#b8e62e)}
+  .c3{background:linear-gradient(140deg,#ff8a5c,#d63d1a)}
+  .c4{background:linear-gradient(140deg,#5eead4,#0f766e)}
+  .c5{background:linear-gradient(140deg,#e7e5da,#8a877c)}
+  .c6{background:linear-gradient(140deg,#fda4af,#be123c)}
+  .song h3{margin:0;font-size:21px;font-weight:900;line-height:1.1}
+  .song .artist{color:var(--app-ink-2);font-size:14.5px;font-weight:650;margin:3px 0 14px}
+  .playrow{display:flex;align-items:center;gap:12px;margin-top:auto}
+  .playbtn{width:46px;height:46px;border-radius:50%;border:none;background:var(--app-ink);color:var(--app-bg);display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+  .playbtn svg{width:18px;height:18px}
+  .eq{display:flex;align-items:flex-end;gap:3px;height:22px;flex:1}
+  .eq i{width:4px;background:var(--app-line);border-radius:2px;height:30%}
+  .playing .eq i{background:var(--lime);animation:eq .7s ease-in-out infinite alternate}
+  .playing .eq i:nth-child(2n){animation-delay:.15s}.playing .eq i:nth-child(3n){animation-delay:.3s}.playing .eq i:nth-child(4n){animation-delay:.45s}
+  @keyframes eq{from{height:18%}to{height:100%}}
+  @media (prefers-reduced-motion: reduce){.playing .eq i{animation:none}}
+  .ptime{font-size:12.5px;color:var(--app-ink-2);font-variant-numeric:tabular-nums;font-weight:700}
+  .pickbtn{margin-top:14px;width:100%;border:none;border-radius:12px;padding:13px;background:var(--app-surface-2);color:var(--app-ink);font-weight:800;font-size:15px}
+  .song:hover .pickbtn,.song.picked .pickbtn{background:var(--lime);color:var(--lime-ink)}
+  .vs-badge{align-self:center;width:58px;height:58px;border-radius:50%;background:var(--coral);color:#fff;font-weight:900;font-size:19px;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 24px rgba(255,92,51,.4);flex:0 0 auto}
+  .arena-foot{margin-top:18px;display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+  .reveal-box{display:none;margin-top:18px;background:color-mix(in srgb,var(--lime) 12%,var(--app-surface));border:1.5px solid var(--lime);border-radius:var(--radius);padding:20px;text-align:center}
+  .reveal-box.on{display:block}
+  .reveal-box h3{margin:0 0 6px;font-size:22px;font-weight:900}
+  .reveal-box p{margin:0 0 14px;color:var(--app-ink-2);font-size:14.5px}
+
+  /* Profile */
+  .profile-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:16px;align-items:start}
+  @media(max-width:860px){.profile-grid{grid-template-columns:1fr}}
+  .arch-card{border-radius:22px;padding:26px;background:linear-gradient(150deg,#23231b,#131310 70%);border:1.5px solid var(--lime);position:relative;overflow:hidden}
+  .arch-card::after{content:"";position:absolute;right:-70px;bottom:-70px;width:230px;height:230px;border-radius:50%;background:radial-gradient(circle,transparent 30%,rgba(184,230,46,.18) 31%,transparent 45%,rgba(184,230,46,.12) 46%,transparent 62%);pointer-events:none}
+  .arch-card .who{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+  .arch-card h3{font-size:clamp(30px,4vw,42px);font-weight:900;line-height:1;margin:0 0 8px}
+  .arch-card h3 em{font-style:italic;color:var(--lime)}
+  .arch-card p{color:var(--app-ink-2);font-size:14.5px;line-height:1.55;margin:0 0 18px;max-width:420px}
+  .trait{display:flex;justify-content:space-between;gap:10px;font-size:13px;font-weight:700;padding:9px 0;border-top:1px solid var(--app-line)}
+  .trait span:first-child{color:var(--app-ink-2)}
+  .rank-list{list-style:none;margin:0;padding:0;counter-reset:rank}
+  .rank-list li{display:flex;align-items:center;gap:13px;padding:11px 4px;border-bottom:1px solid var(--app-line)}
+  .rank-list li:last-child{border-bottom:none}
+  .rank-num{width:30px;height:30px;border-radius:9px;background:var(--app-surface-2);font-weight:900;font-size:14px;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+  .rank-list li:first-child .rank-num{background:var(--lime);color:var(--lime-ink)}
+  .rank-song{flex:1;min-width:0}
+  .rank-song b{display:block;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .rank-song span{font-size:12.5px;color:var(--app-ink-2)}
+  .elo{font-weight:900;font-size:14px;color:var(--lime);font-variant-numeric:tabular-nums}
+  .elo small{display:block;color:var(--app-ink-3);font-size:10px;letter-spacing:.08em;text-align:right}
+  .pin-item{display:flex;gap:11px;padding:13px 0;border-bottom:1px solid var(--app-line)}
+  .pin-item:last-child{border-bottom:none}
+  .pin-item p{margin:0;font-size:14px;line-height:1.5}
+  .pin-item .from{font-size:12px;color:var(--app-ink-2);margin-top:3px}
+  .pin-flag{color:var(--coral);flex:0 0 auto;margin-top:2px}
+
+  /* Community */
+  .comm-head{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;margin-bottom:16px}
+  .member-row{display:flex;align-items:center}
+  .member-row .avatar-dot{margin-left:-8px}
+  .member-row .avatar-dot:first-child{margin-left:0}
+  .comm-grid{display:grid;grid-template-columns:1.35fr .65fr;gap:16px;align-items:start}
+  @media(max-width:860px){.comm-grid{grid-template-columns:1fr}}
+  .composer{display:flex;gap:11px;background:var(--app-surface);border:1px solid var(--app-line);border-radius:var(--radius);padding:15px;margin-bottom:14px}
+  .composer input{flex:1;background:var(--app-surface-2);border:1px solid var(--app-line);border-radius:999px;color:var(--app-ink);padding:11px 16px;font-size:14px;font-family:inherit;min-width:0}
+  .post{background:var(--app-surface);border:1px solid var(--app-line);border-radius:var(--radius);padding:18px;margin-bottom:12px}
+  .post-head{display:flex;gap:11px;align-items:center;margin-bottom:9px}
+  .post-head b{font-size:14.5px}
+  .post-head span{font-size:12px;color:var(--app-ink-3);display:block}
+  .post p{margin:0 0 13px;font-size:15px;line-height:1.55}
+  .post-actions{display:flex;gap:6px;flex-wrap:wrap}
+  .act{display:inline-flex;align-items:center;gap:6px;background:transparent;border:1px solid var(--app-line);color:var(--app-ink-2);border-radius:999px;padding:7px 13px;font-size:13px;font-weight:700}
+  .act svg{width:15px;height:15px}
+  .act.liked{border-color:var(--coral);color:var(--coral)}
+  .act.pinned{border-color:var(--lime);color:var(--lime)}
+  .replies{display:none;margin-top:13px;border-top:1px dashed var(--app-line);padding-top:12px}
+  .replies.on{display:block}
+  .reply{display:flex;gap:10px;margin-bottom:11px}
+  .reply p{margin:0;font-size:13.5px;line-height:1.5}
+  .reply .from{font-size:12px;color:var(--app-ink-2);font-weight:700}
+  .side-list{list-style:none;margin:10px 0 0;padding:0}
+  .side-list li{display:flex;align-items:center;gap:10px;padding:8px 0;font-size:14px;font-weight:650}
+  .side-list .avatar-dot{width:28px;height:28px;font-size:11px}
+
+  /* Explore */
+  .filter-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+  .filter-row button{background:var(--app-surface);border:1.5px solid var(--app-line);color:var(--app-ink-2);border-radius:999px;padding:9px 16px;font-size:13.5px;font-weight:700}
+  .filter-row button.active{background:var(--lime);color:var(--lime-ink);border-color:var(--lime)}
+  .explore-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:14px}
+  .comm-card{background:var(--app-surface);border:1px solid var(--app-line);border-radius:var(--radius);padding:18px;display:flex;flex-direction:column}
+  .comm-card .swatch{height:56px;border-radius:10px;margin-bottom:13px}
+  .comm-card h3{margin:0 0 4px;font-size:17.5px;font-weight:900;line-height:1.15}
+  .comm-card .genre-tag{font-size:11.5px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--lime)}
+  .comm-card p{margin:7px 0 14px;font-size:13.5px;color:var(--app-ink-2);line-height:1.5;flex:1}
+  .comm-card .foot{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .comm-card .members{font-size:12.5px;color:var(--app-ink-2);font-weight:700}
+
+  .toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,80px);background:var(--ink);color:var(--bg);padding:13px 20px;border-radius:999px;font-size:14px;font-weight:700;box-shadow:0 16px 36px rgba(0,0,0,.3);transition:transform .3s ease;z-index:50;max-width:calc(100vw - 32px);text-align:center}
+  .toast.on{transform:translate(-50%,0)}
+  .footnote{margin-top:16px;font-size:13px;color:var(--ink-2);line-height:1.6}
+  .footnote b{color:var(--ink)}
+</style>
+</head>
+<body>
+<div class="proto-wrap">
+
+  <div class="proto-head">
+    <div>
+      <h1>InTunes, <em>page by page.</em></h1>
+      <p>A clickable design prototype of the full MVP flow. Every screen below is live — pick songs in the arena, like and pin posts on the board, and watch how each page hands off to the next.</p>
+    </div>
+    <span class="proto-badge"><i></i> Interactive prototype</span>
+  </div>
+
+  <!-- Flow map -->
+  <section class="flow" aria-label="How the pages connect">
+    <h2>How the pages connect</h2>
+    <p>Tap any step to jump to that screen inside the app frame below.</p>
+    <div class="flow-track">
+      <button class="flow-node" data-goto="genres"><span class="step">Step 1</span><b>Genre Select</b><span>Pick a genre to run matchups in</span></button>
+      <span class="flow-arrow">→</span>
+      <button class="flow-node" data-goto="arena"><span class="step">Step 2</span><b>Matchup Arena</b><span>16 head-to-head rounds, Elo scores underneath</span></button>
+      <span class="flow-arrow">→</span>
+      <button class="flow-node" data-goto="profile"><span class="step">Step 3</span><b>Music Profile</b><span>Your picks become a named archetype + ranked list</span></button>
+      <span class="flow-arrow">→</span>
+      <button class="flow-node" data-goto="community"><span class="step">Step 4</span><b>Community Board</b><span>Auto-joined to your archetype's people</span></button>
+      <span class="flow-arrow">→</span>
+      <button class="flow-node" data-goto="explore"><span class="step">Step 5</span><b>Explore</b><span>Browse every other archetype community</span></button>
+    </div>
+    <div class="flow-loop"><b>The loop back:</b> comments you pin on the board land on your public profile — so Community (step 4) feeds Profile (step 3), and your profile is what other people see when they visit you from Explore.</div>
+  </section>
+
+  <!-- App frame -->
+  <div class="app" id="app">
+    <div class="app-top">
+      <span class="wordmark"><span class="disc"></span>InTunes</span>
+      <nav class="app-nav" aria-label="Prototype screens">
+        <button data-goto="home" class="active">Home</button>
+        <button data-goto="genres">Genres</button>
+        <button data-goto="arena">Arena</button>
+        <button data-goto="profile">My Profile</button>
+        <button data-goto="community">Community</button>
+        <button data-goto="explore">Explore</button>
+      </nav>
+      <span class="avatar-dot" title="Signed in as Ricardi">R</span>
+    </div>
+
+    <!-- HOME -->
+    <section class="view on" id="view-home">
+      <span class="kicker">Welcome back, Ricardi</span>
+      <h2 class="big">Find your sound.<br>Find <em>your people.</em></h2>
+      <p class="lede">InTunes builds your music profile from head-to-head song matchups — no quizzes, no typing your favorites. Just pick the song you'd keep. Sixteen picks later, you get a named profile and a community of people who hear music like you do.</p>
+      <div class="row" style="margin-bottom:22px">
+        <button class="btn" data-goto="genres">Start a matchup run</button>
+        <button class="btn ghost" data-goto="explore">Browse communities</button>
+      </div>
+      <div class="home-grid">
+        <div class="panel">
+          <h3>Your taste so far</h3>
+          <p>One genre profile unlocked. Two more runs and your cross-genre identity starts to form.</p>
+          <div class="progress-line">
+            <div class="lab"><span>Hip-Hop — Boom Bap Archaeologist</span><span>Complete</span></div>
+            <div class="bar"><i style="width:100%"></i></div>
+          </div>
+          <div class="progress-line">
+            <div class="lab"><span>R&amp;B — in progress</span><span>9 / 16 rounds</span></div>
+            <div class="bar"><i style="width:56%"></i></div>
+          </div>
+          <div class="genre-mini">
+            <button class="chip" data-goto="genres"><i style="background:var(--lime)"></i>Run R&amp;B next</button>
+            <button class="chip" data-goto="profile"><i style="background:var(--coral)"></i>View my archetype card</button>
+          </div>
+        </div>
+        <div class="panel">
+          <h3>Your community today</h3>
+          <p><b style="color:var(--app-ink)">Boom Bap Archaeologists</b> — 3 new posts since yesterday, including a heated Nas vs. Jay-Z thread.</p>
+          <div class="stat-row">
+            <div class="stat"><b>1,248</b><span>Members</span></div>
+            <div class="stat"><b>42</b><span>Posts / wk</span></div>
+            <div class="stat"><b>3</b><span>Your pins</span></div>
+          </div>
+          <div class="row" style="margin-top:16px">
+            <button class="btn small" data-goto="community">Open the board</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- GENRES -->
+    <section class="view" id="view-genres">
+      <span class="kicker">Step 1 — Genre select</span>
+      <h2 class="big">Pick a genre.<br>We bring <em>the songs.</em></h2>
+      <p class="lede">Each genre is seeded with 25 songs spanning eras and popularity — underground staples next to chart-toppers. Your picks across that spread are what name your profile. Choosing a genre drops you straight into the arena.</p>
+      <div class="genre-grid">
+        <button class="genre-card" data-run="Hip-Hop">
+          <div class="swatch sw-hiphop"></div>
+          <h3>Hip-Hop</h3>
+          <p>Boom bap to trap, coast to coast. The deepest seed list in the app.</p>
+          <div class="meta"><span>25 songs · 16 rounds</span><b>Your profile ✓</b></div>
+        </button>
+        <button class="genre-card" data-run="R&amp;B">
+          <div class="swatch sw-rnb"></div>
+          <h3>R&amp;B</h3>
+          <p>Slow jams, 90s groups, and the new wave of alt-R&amp;B.</p>
+          <div class="meta"><span>25 songs · 16 rounds</span><b>9 / 16 played</b></div>
+        </button>
+        <button class="genre-card" data-run="Pop">
+          <div class="swatch sw-pop"></div>
+          <h3>Pop</h3>
+          <p>Hooks engineered in a lab. Which ones survive your bracket?</p>
+          <div class="meta"><span>25 songs · 16 rounds</span><b>Not started</b></div>
+        </button>
+        <button class="genre-card" data-run="Rock">
+          <div class="swatch sw-rock"></div>
+          <h3>Rock</h3>
+          <p>Classic riffs against indie staples and 2000s alt anthems.</p>
+          <div class="meta"><span>25 songs · 16 rounds</span><b>Not started</b></div>
+        </button>
+        <button class="genre-card" data-run="Electronic">
+          <div class="swatch sw-electro"></div>
+          <h3>Electronic</h3>
+          <p>House, techno, and festival-sized drops, head to head.</p>
+          <div class="meta"><span>25 songs · 16 rounds</span><b>Not started</b></div>
+        </button>
+      </div>
+    </section>
+
+    <!-- ARENA -->
+    <section class="view" id="view-arena">
+      <span class="kicker">Step 2 — Matchup arena · <span id="arena-genre">Hip-Hop</span></span>
+      <h2 class="big" style="font-size:clamp(24px,3.4vw,34px)">One has to go. <em>Which one stays?</em></h2>
+      <div class="arena-head">
+        <span class="round">Round <span id="round-num">1</span> of 6 <span style="color:var(--app-ink-3);font-weight:650">(16 in the real run)</span></span>
+        <div class="bar"><i id="round-bar" style="width:8%"></i></div>
+        <span class="lean">Your taste so far leans: <b id="lean-text">too early to call</b></span>
+      </div>
+      <div class="versus">
+        <div class="song" id="song-a">
+          <div class="cover c1" id="cover-a"><span class="pop" id="pop-a"></span><span class="yr" id="yr-a"></span></div>
+          <h3 id="title-a"></h3>
+          <div class="artist" id="artist-a"></div>
+          <div class="playrow">
+            <button class="playbtn" data-play="a" aria-label="Play 30 second preview">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+            </button>
+            <div class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+            <span class="ptime">0:30 preview</span>
+          </div>
+          <button class="pickbtn" data-pick="a">Keep this one</button>
+        </div>
+        <div class="vs-badge">VS</div>
+        <div class="song" id="song-b">
+          <div class="cover c2" id="cover-b"><span class="pop" id="pop-b"></span><span class="yr" id="yr-b"></span></div>
+          <h3 id="title-b"></h3>
+          <div class="artist" id="artist-b"></div>
+          <div class="playrow">
+            <button class="playbtn" data-play="b" aria-label="Play 30 second preview">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+            </button>
+            <div class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+            <span class="ptime">0:30 preview</span>
+          </div>
+          <button class="pickbtn" data-pick="b">Keep this one</button>
+        </div>
+      </div>
+      <div class="arena-foot">
+        <span class="lean">Every pick moves both songs' <b>Elo ratings</b> — winners climb, losers fall. Sixteen rounds is enough for a stable ranking.</span>
+        <button class="btn ghost small" id="skip-btn">Skip this pair</button>
+      </div>
+      <div class="reveal-box" id="reveal-box">
+        <h3>That's a profile.</h3>
+        <p id="reveal-text">Your picks leaned old-school and underground — the Elo engine has a name for that.</p>
+        <button class="btn" data-goto="profile">Reveal my music profile →</button>
+      </div>
+    </section>
+
+    <!-- PROFILE -->
+    <section class="view" id="view-profile">
+      <span class="kicker">Step 3 — Music profile</span>
+      <h2 class="big" style="font-size:clamp(24px,3.4vw,34px)">This is what your picks <em>say about you.</em></h2>
+      <div class="profile-grid">
+        <div class="arch-card">
+          <div class="who">
+            <span class="avatar-dot" style="width:44px;height:44px;font-size:16px">R</span>
+            <div>
+              <b style="font-size:16px">@ricardi</b>
+              <span style="display:block;font-size:12.5px;color:var(--app-ink-2)">Hip-Hop profile · unlocked Oct 2026</span>
+            </div>
+          </div>
+          <span class="kicker">Your archetype</span>
+          <h3>Boom Bap<br><em>Archaeologist</em></h3>
+          <p>You dig for the originals. Given a modern hit and a 90s cornerstone, you kept the cornerstone almost every time — and your deep-cut picks say you were crate-digging long before this app.</p>
+          <div class="trait"><span>Era lean</span><b>1990s · Golden age</b></div>
+          <div class="trait"><span>Popularity lean</span><b>Deep cuts over chart hits</b></div>
+          <div class="trait"><span>How it's named</span><b>Era × popularity matrix</b></div>
+          <div class="trait"><span>Your community</span><b>Boom Bap Archaeologists</b></div>
+          <div class="row" style="margin-top:20px">
+            <button class="btn small" data-goto="community">Enter your community</button>
+            <button class="btn ghost small" id="share-btn">Copy share text</button>
+          </div>
+          <p style="margin:14px 0 0;font-size:12.5px">The card above is the shareable result — designed to be screenshotted and posted. It's the growth loop.</p>
+        </div>
+        <div>
+          <div class="panel" style="margin-bottom:14px">
+            <h3>Your ranked songs</h3>
+            <p>Final Elo order after 16 rounds. This list is the raw taste data behind the archetype.</p>
+            <ol class="rank-list">
+              <li><span class="rank-num">1</span><div class="rank-song"><b>N.Y. State of Mind</b><span>Nas · 1994</span></div><span class="elo">1612<small>ELO</small></span></li>
+              <li><span class="rank-num">2</span><div class="rank-song"><b>Electric Relaxation</b><span>A Tribe Called Quest · 1993</span></div><span class="elo">1588<small>ELO</small></span></li>
+              <li><span class="rank-num">3</span><div class="rank-song"><b>Ms. Jackson</b><span>Outkast · 2000</span></div><span class="elo">1551<small>ELO</small></span></li>
+              <li><span class="rank-num">4</span><div class="rank-song"><b>Alright</b><span>Kendrick Lamar · 2015</span></div><span class="elo">1529<small>ELO</small></span></li>
+              <li><span class="rank-num">5</span><div class="rank-song"><b>Doo Wop (That Thing)</b><span>Lauryn Hill · 1998</span></div><span class="elo">1504<small>ELO</small></span></li>
+            </ol>
+          </div>
+          <div class="panel">
+            <h3>Pinned to your profile</h3>
+            <p>Comments from your community board that you pinned — they live here for anyone visiting your profile. <b style="color:var(--app-ink)" id="pin-count">2 pinned</b></p>
+            <div id="pinned-list">
+              <div class="pin-item">
+                <svg class="pin-flag" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M16 3a1 1 0 0 1 .7 1.7L14 7.4V11h3a1 1 0 0 1 .7 1.7l-5 6A1 1 0 0 1 11 18V6.4L8.3 3.7A1 1 0 0 1 9 2h6a1 1 0 0 1 1 1Z" transform="rotate(35 12 12)"/></svg>
+                <div><p>"Illmatic isn't just the best debut, it's the blueprint. Fight me."</p><div class="from">Your post · Boom Bap Archaeologists · 48 likes</div></div>
+              </div>
+              <div class="pin-item">
+                <svg class="pin-flag" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M16 3a1 1 0 0 1 .7 1.7L14 7.4V11h3a1 1 0 0 1 .7 1.7l-5 6A1 1 0 0 1 11 18V6.4L8.3 3.7A1 1 0 0 1 9 2h6a1 1 0 0 1 1 1Z" transform="rotate(35 12 12)"/></svg>
+                <div><p>"Tribe over everything. Electric Relaxation is a perfect song, no skips in either direction."</p><div class="from">Reply by @maya_beats · pinned by you</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- COMMUNITY -->
+    <section class="view" id="view-community">
+      <span class="kicker">Step 4 — Your community board</span>
+      <div class="comm-head">
+        <div>
+          <h2 class="big" style="margin-bottom:6px">Boom Bap <em>Archaeologists</em></h2>
+          <p class="lede" style="margin:0">Hip-Hop archetype community · You were auto-joined when your profile unlocked. Everyone here picked the classics over the charts, just like you.</p>
+        </div>
+        <div>
+          <div class="member-row">
+            <span class="avatar-dot" style="background:#0f766e">M</span>
+            <span class="avatar-dot" style="background:#d97706">J</span>
+            <span class="avatar-dot" style="background:#be123c">T</span>
+            <span class="avatar-dot" style="background:#3f6212">K</span>
+            <span style="margin-left:12px;font-size:13px;color:var(--app-ink-2);font-weight:700">1,248 members</span>
+          </div>
+        </div>
+      </div>
+      <div class="comm-grid">
+        <div>
+          <div class="composer">
+            <span class="avatar-dot">R</span>
+            <input id="composer-input" type="text" placeholder="Start a thread with your people…" aria-label="Write a post" />
+            <button class="btn small" id="post-btn">Post</button>
+          </div>
+          <div id="post-list">
+            <article class="post">
+              <div class="post-head"><span class="avatar-dot" style="background:#0f766e">M</span><div><b>@maya_beats</b><span>Boom Bap Archaeologist · 2h ago</span></div></div>
+              <p>Unpopular opinion thread: which golden-age album has aged the worst? I'll start — some of those 1994 skits are unlistenable now and we all know it.</p>
+              <div class="post-actions">
+                <button class="act like-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21.2l7.8-7.7 1-1a5.5 5.5 0 0 0 0-7.9z"/></svg><span class="like-count">86</span></button>
+                <button class="act reply-toggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.4 8.4 0 0 1-8.5 8.4 8.6 8.6 0 0 1-3.8-.9L3 20l1.1-5.4a8.3 8.3 0 0 1-1-4.1A8.4 8.4 0 0 1 11.5 2h.9A8.4 8.4 0 0 1 21 11.5z"/></svg>12 replies</button>
+                <button class="act pin-btn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 3a1 1 0 0 1 .7 1.7L14 7.4V11h3a1 1 0 0 1 .7 1.7l-5 6A1 1 0 0 1 11 18V6.4L8.3 3.7A1 1 0 0 1 9 2h6a1 1 0 0 1 1 1Z" transform="rotate(35 12 12)"/></svg>Pin to my profile</button>
+              </div>
+              <div class="replies">
+                <div class="reply"><span class="avatar-dot" style="background:#d97706;width:28px;height:28px;font-size:11px">J</span><div><span class="from">@jaydiggs</span><p>Skits aside, the sequencing on those albums is still unmatched. Artists today don't build worlds like that.</p></div></div>
+                <div class="reply"><span class="avatar-dot" style="background:#be123c;width:28px;height:28px;font-size:11px">T</span><div><span class="from">@t_on_vinyl</span><p>Hard disagree on "aged worst" — production from '93-'96 is literally what half of modern rap samples.</p></div></div>
+              </div>
+            </article>
+            <article class="post">
+              <div class="post-head"><span class="avatar-dot" style="background:#3f6212">K</span><div><b>@kofi.wav</b><span>Boom Bap Archaeologist · 5h ago</span></div></div>
+              <p>My arena run just put Electric Relaxation at #1 and honestly? Correct. What did your final top song end up being — drop your #1s below.</p>
+              <div class="post-actions">
+                <button class="act like-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21.2l7.8-7.7 1-1a5.5 5.5 0 0 0 0-7.9z"/></svg><span class="like-count">132</span></button>
+                <button class="act reply-toggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.4 8.4 0 0 1-8.5 8.4 8.6 8.6 0 0 1-3.8-.9L3 20l1.1-5.4a8.3 8.3 0 0 1-1-4.1A8.4 8.4 0 0 1 11.5 2h.9A8.4 8.4 0 0 1 21 11.5z"/></svg>34 replies</button>
+                <button class="act pin-btn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 3a1 1 0 0 1 .7 1.7L14 7.4V11h3a1 1 0 0 1 .7 1.7l-5 6A1 1 0 0 1 11 18V6.4L8.3 3.7A1 1 0 0 1 9 2h6a1 1 0 0 1 1 1Z" transform="rotate(35 12 12)"/></svg>Pin to my profile</button>
+              </div>
+              <div class="replies">
+                <div class="reply"><span class="avatar-dot" style="background:#16150f;width:28px;height:28px;font-size:11px">R</span><div><span class="from">@ricardi (you)</span><p>N.Y. State of Mind took my #1. That beat switch energy is undefeated.</p></div></div>
+                <div class="reply"><span class="avatar-dot" style="background:#0f766e;width:28px;height:28px;font-size:11px">M</span><div><span class="from">@maya_beats</span><p>Scenario for me. Tribe really ran my whole bracket.</p></div></div>
+              </div>
+            </article>
+            <article class="post">
+              <div class="post-head"><span class="avatar-dot" style="background:#26261f">D</span><div><b>@dee_samples</b><span>Boom Bap Archaeologist · Yesterday</span></div></div>
+              <p>Weekly dig: post one sample flip where the producer outdid the original song. Winner gets pinned by the mods on Friday.</p>
+              <div class="post-actions">
+                <button class="act like-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21.2l7.8-7.7 1-1a5.5 5.5 0 0 0 0-7.9z"/></svg><span class="like-count">57</span></button>
+                <button class="act reply-toggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.4 8.4 0 0 1-8.5 8.4 8.6 8.6 0 0 1-3.8-.9L3 20l1.1-5.4a8.3 8.3 0 0 1-1-4.1A8.4 8.4 0 0 1 11.5 2h.9A8.4 8.4 0 0 1 21 11.5z"/></svg>21 replies</button>
+                <button class="act pin-btn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 3a1 1 0 0 1 .7 1.7L14 7.4V11h3a1 1 0 0 1 .7 1.7l-5 6A1 1 0 0 1 11 18V6.4L8.3 3.7A1 1 0 0 1 9 2h6a1 1 0 0 1 1 1Z" transform="rotate(35 12 12)"/></svg>Pin to my profile</button>
+              </div>
+              <div class="replies">
+                <div class="reply"><span class="avatar-dot" style="background:#d97706;width:28px;height:28px;font-size:11px">J</span><div><span class="from">@jaydiggs</span><p>Pete Rock on They Reminisce Over You. Case closed, thread over.</p></div></div>
+              </div>
+            </article>
+          </div>
+        </div>
+        <div>
+          <div class="panel" style="margin-bottom:14px">
+            <h3>About this community</h3>
+            <p>For listeners whose brackets crown the classics: pre-2005 leans, deep-cut picks, production over hooks. Formed automatically from the Hip-Hop archetype matrix.</p>
+            <div class="trait"><span>Archetype</span><b>90s × Deep cuts</b></div>
+            <div class="trait"><span>Members</span><b>1,248</b></div>
+            <div class="trait"><span>Founded</span><b>Launch archetype</b></div>
+          </div>
+          <div class="panel">
+            <h3>Most active diggers</h3>
+            <ul class="side-list">
+              <li><span class="avatar-dot" style="background:#0f766e">M</span>@maya_beats · 214 posts</li>
+              <li><span class="avatar-dot" style="background:#3f6212">K</span>@kofi.wav · 187 posts</li>
+              <li><span class="avatar-dot" style="background:#d97706">J</span>@jaydiggs · 156 posts</li>
+              <li><span class="avatar-dot" style="background:#be123c">T</span>@t_on_vinyl · 141 posts</li>
+            </ul>
+            <div class="row" style="margin-top:14px">
+              <button class="btn ghost small" data-goto="explore">Visit other communities</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- EXPLORE -->
+    <section class="view" id="view-explore">
+      <span class="kicker">Step 5 — Explore</span>
+      <h2 class="big">Every archetype has <em>a room.</em></h2>
+      <p class="lede">Each genre's matchup results sort listeners into archetype communities. Yours is home base — Explore is how you visit everyone else's, see what their brackets crowned, and get pulled into new genres.</p>
+      <div class="filter-row" id="filter-row">
+        <button class="active" data-filter="all">All communities</button>
+        <button data-filter="hiphop">Hip-Hop</button>
+        <button data-filter="rnb">R&amp;B</button>
+        <button data-filter="pop">Pop</button>
+        <button data-filter="rock">Rock</button>
+        <button data-filter="electronic">Electronic</button>
+      </div>
+      <div class="explore-grid" id="explore-grid">
+        <div class="comm-card" data-genre="hiphop">
+          <div class="swatch sw-hiphop"></div>
+          <span class="genre-tag">Hip-Hop · Your home</span>
+          <h3>Boom Bap Archaeologists</h3>
+          <p>Golden-age leans and deep-cut picks. Production-first listeners who crown the classics.</p>
+          <div class="foot"><span class="members">1,248 members</span><button class="btn small" data-goto="community">Open board</button></div>
+        </div>
+        <div class="comm-card" data-genre="hiphop">
+          <div class="swatch sw-hiphop" style="filter:hue-rotate(40deg) saturate(1.2)"></div>
+          <span class="genre-tag">Hip-Hop</span>
+          <h3>Mainstream Millennials</h3>
+          <p>2000s–2010s chart energy. If it headlined a festival, it probably won their bracket.</p>
+          <div class="foot"><span class="members">3,912 members</span><button class="btn ghost small visit-btn">Visit</button></div>
+        </div>
+        <div class="comm-card" data-genre="hiphop">
+          <div class="swatch sw-hiphop" style="filter:hue-rotate(-30deg) brightness(1.1)"></div>
+          <span class="genre-tag">Hip-Hop</span>
+          <h3>Trap Royalty</h3>
+          <p>Modern, mainstream, bass-first. Their top-5 lists read like the current charts — proudly.</p>
+          <div class="foot"><span class="members">2,640 members</span><button class="btn ghost small visit-btn">Visit</button></div>
+        </div>
+        <div class="comm-card" data-genre="rnb">
+          <div class="swatch sw-rnb"></div>
+          <span class="genre-tag">R&amp;B</span>
+          <h3>Slow Jam Romantics</h3>
+          <p>90s groups and quiet-storm staples beat everything in their runs. Harmony over hype.</p>
+          <div class="foot"><span class="members">1,875 members</span><button class="btn ghost small visit-btn">Visit</button></div>
+        </div>
+        <div class="comm-card" data-genre="rnb">
+          <div class="swatch sw-rnb" style="filter:hue-rotate(50deg)"></div>
+          <span class="genre-tag">R&amp;B</span>
+          <h3>Alt-R&amp;B Dreamers</h3>
+          <p>Moody, modern, low-popularity picks. Their brackets bury the hits on purpose.</p>
+          <div class="foot"><span class="members">964 members</span><button class="btn ghost small visit-btn">Visit</button></div>
+        </div>
+        <div class="comm-card" data-genre="pop">
+          <div class="swatch sw-pop"></div>
+          <span class="genre-tag">Pop</span>
+          <h3>Hook Maximalists</h3>
+          <p>The biggest chorus wins, every time. Zero shame, all earworms.</p>
+          <div class="foot"><span class="members">4,208 members</span><button class="btn ghost small visit-btn">Visit</button></div>
+        </div>
+        <div class="comm-card" data-genre="rock">
+          <div class="swatch sw-rock"></div>
+          <span class="genre-tag">Rock</span>
+          <h3>Riff Traditionalists</h3>
+          <p>Classic-era dominance with a soft spot for 90s alt. Guitar is non-negotiable.</p>
+          <div class="foot"><span class="members">1,530 members</span><button class="btn ghost small visit-btn">Visit</button></div>
+        </div>
+        <div class="comm-card" data-genre="electronic">
+          <div class="swatch sw-electro"></div>
+          <span class="genre-tag">Electronic</span>
+          <h3>Warehouse Purists</h3>
+          <p>Underground house and techno over festival drops. The later the set, the better.</p>
+          <div class="foot"><span class="members">1,102 members</span><button class="btn ghost small visit-btn">Visit</button></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <p class="footnote"><b>How to read this prototype:</b> the app frame above is the product — dark, vinyl-inspired, one accent (lime) for taste actions and one (coral) for the VS moment and likes. Demo content uses a shortened 6-round Hip-Hop run so you can reach the profile reveal quickly; the real MVP runs 16 rounds per genre across 5 seeded genres. Likes, pins, filters, and the post composer all work in-page so the board → profile pin loop can be felt, not just described.</p>
+</div>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(function(){
+  var toastEl = document.getElementById('toast'), toastTimer = null;
+  function toast(msg){
+    toastEl.textContent = msg;
+    toastEl.classList.add('on');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toastEl.classList.remove('on'); }, 2600);
+  }
+
+  /* ---------- Navigation ---------- */
+  var views = ['home','genres','arena','profile','community','explore'];
+  function showView(id){
+    views.forEach(function(v){
+      document.getElementById('view-' + v).classList.toggle('on', v === id);
+    });
+    document.querySelectorAll('.app-nav button').forEach(function(b){
+      b.classList.toggle('active', b.getAttribute('data-goto') === id);
+    });
+    document.querySelectorAll('.flow-node').forEach(function(n){
+      n.classList.toggle('active', n.getAttribute('data-goto') === id);
+    });
+    document.getElementById('app').scrollIntoView({behavior:'smooth', block:'start'});
+  }
+  document.querySelectorAll('[data-goto]').forEach(function(el){
+    el.addEventListener('click', function(){ showView(el.getAttribute('data-goto')); });
+  });
+
+  /* ---------- Genre -> Arena ---------- */
+  document.querySelectorAll('[data-run]').forEach(function(card){
+    card.addEventListener('click', function(){
+      var g = card.getAttribute('data-run');
+      document.getElementById('arena-genre').textContent = g.replace('&amp;','&');
+      resetArena();
+      showView('arena');
+      toast(g.replace('&amp;','&') + ' run started — 25 songs seeded, first pair is up.');
+    });
+  });
+
+  /* ---------- Arena ---------- */
+  var pairs = [
+    { a:{t:'Electric Relaxation', ar:'A Tribe Called Quest', y:1993, pop:'Deep cut', c:'c2', lean:'90s · underground'},
+      b:{t:"God's Plan", ar:'Drake', y:2018, pop:'Chart hit', c:'c1', lean:'2010s · mainstream'} },
+    { a:{t:'Doo Wop (That Thing)', ar:'Lauryn Hill', y:1998, pop:'Chart hit', c:'c3', lean:'90s · mainstream'},
+      b:{t:'Sicko Mode', ar:'Travis Scott', y:2018, pop:'Chart hit', c:'c4', lean:'2010s · mainstream'} },
+    { a:{t:'N.Y. State of Mind', ar:'Nas', y:1994, pop:'Deep cut', c:'c5', lean:'90s · underground'},
+      b:{t:'No Role Modelz', ar:'J. Cole', y:2014, pop:'Chart hit', c:'c6', lean:'2010s · mainstream'} },
+    { a:{t:'Ms. Jackson', ar:'Outkast', y:2000, pop:'Chart hit', c:'c1', lean:'2000s · mainstream'},
+      b:{t:'Get Ur Freak On', ar:'Missy Elliott', y:2001, pop:'Chart hit', c:'c2', lean:'2000s · mainstream'} },
+    { a:{t:'Alright', ar:'Kendrick Lamar', y:2015, pop:'Chart hit', c:'c4', lean:'2010s · mainstream'},
+      b:{t:'Hard Knock Life', ar:'Jay-Z', y:1998, pop:'Chart hit', c:'c3', lean:'90s · mainstream'} },
+    { a:{t:'Scenario', ar:'A Tribe Called Quest', y:1991, pop:'Deep cut', c:'c2', lean:'90s · underground'},
+      b:{t:'HUMBLE.', ar:'Kendrick Lamar', y:2017, pop:'Chart hit', c:'c1', lean:'2010s · mainstream'} }
+  ];
+  var round = 0, picks = [], busy = false;
+
+  function fillSong(side, s){
+    document.getElementById('title-' + side).textContent = s.t;
+    document.getElementById('artist-' + side).textContent = s.ar;
+    document.getElementById('yr-' + side).textContent = s.y;
+    document.getElementById('pop-' + side).textContent = s.pop.toUpperCase();
+    var cov = document.getElementById('cover-' + side);
+    cov.className = 'cover ' + s.c;
+  }
+  function loadPair(){
+    var p = pairs[round];
+    fillSong('a', p.a); fillSong('b', p.b);
+    document.getElementById('round-num').textContent = round + 1;
+    document.getElementById('round-bar').style.width = ((round) / pairs.length * 100 + 8) + '%';
+    ['a','b'].forEach(function(s){
+      var el = document.getElementById('song-' + s);
+      el.classList.remove('picked','faded','playing');
+    });
+  }
+  function updateLean(){
+    if(!picks.length){ document.getElementById('lean-text').textContent = 'too early to call'; return; }
+    var counts = {};
+    picks.forEach(function(l){ counts[l] = (counts[l] || 0) + 1; });
+    var best = Object.keys(counts).sort(function(x,y){ return counts[y] - counts[x]; })[0];
+    document.getElementById('lean-text').textContent = best;
+  }
+  function pick(side){
+    if(busy || round >= pairs.length) return;
+    busy = true;
+    var other = side === 'a' ? 'b' : 'a';
+    document.getElementById('song-' + side).classList.add('picked');
+    document.getElementById('song-' + other).classList.add('faded');
+    picks.push(pairs[round][side].lean);
+    updateLean();
+    setTimeout(function(){
+      busy = false;
+      round++;
+      if(round >= pairs.length){
+        document.getElementById('round-num').textContent = pairs.length;
+        document.getElementById('round-bar').style.width = '100%';
+        document.getElementById('reveal-box').classList.add('on');
+        document.getElementById('reveal-text').textContent =
+          'Your picks leaned ' + document.getElementById('lean-text').textContent +
+          ' — the Elo engine has ranked all 25 songs and picked your archetype.';
+        toast('Run complete — your music profile is ready.');
+      } else {
+        loadPair();
+      }
+    }, 480);
+  }
+  function resetArena(){
+    round = 0; picks = []; busy = false;
+    document.getElementById('reveal-box').classList.remove('on');
+    updateLean();
+    loadPair();
+  }
+  document.querySelectorAll('[data-pick]').forEach(function(btn){
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      pick(btn.getAttribute('data-pick'));
+    });
+  });
+  ['a','b'].forEach(function(side){
+    document.getElementById('song-' + side).addEventListener('click', function(){ pick(side); });
+  });
+  document.getElementById('skip-btn').addEventListener('click', function(){
+    if(busy || round >= pairs.length) return;
+    round++;
+    if(round >= pairs.length){
+      document.getElementById('round-bar').style.width = '100%';
+      document.getElementById('reveal-box').classList.add('on');
+    } else loadPair();
+  });
+
+  /* Play preview (visual only) */
+  document.querySelectorAll('[data-play]').forEach(function(btn){
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      var card = document.getElementById('song-' + btn.getAttribute('data-play'));
+      var wasPlaying = card.classList.contains('playing');
+      document.querySelectorAll('.song').forEach(function(s){ s.classList.remove('playing'); });
+      document.querySelectorAll('[data-play]').forEach(function(b){
+        b.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
+      });
+      if(!wasPlaying){
+        card.classList.add('playing');
+        btn.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>';
+        toast('Playing 30-second preview (iTunes preview in the real build).');
+      }
+    });
+  });
+  loadPair();
+
+  /* ---------- Profile share ---------- */
+  document.getElementById('share-btn').addEventListener('click', function(){
+    var text = 'My InTunes Hip-Hop profile: Boom Bap Archaeologist. Top song: N.Y. State of Mind — Nas. Find your sound, find your people.';
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(function(){ toast('Share text copied — this card is the screenshot-friendly version.'); },
+        function(){ toast(text); });
+    } else { toast(text); }
+  });
+
+  /* ---------- Community board ---------- */
+  var pinTotal = 2;
+  function wirePost(scope){
+    scope.querySelectorAll('.like-btn').forEach(function(btn){
+      if(btn.dataset.wired) return; btn.dataset.wired = '1';
+      btn.addEventListener('click', function(){
+        var count = btn.querySelector('.like-count');
+        var n = parseInt(count.textContent, 10);
+        if(btn.classList.contains('liked')){ btn.classList.remove('liked'); count.textContent = n - 1; }
+        else { btn.classList.add('liked'); count.textContent = n + 1; }
+      });
+    });
+    scope.querySelectorAll('.reply-toggle').forEach(function(btn){
+      if(btn.dataset.wired) return; btn.dataset.wired = '1';
+      btn.addEventListener('click', function(){
+        var replies = btn.closest('.post').querySelector('.replies');
+        if(replies) replies.classList.toggle('on');
+      });
+    });
+    scope.querySelectorAll('.pin-btn').forEach(function(btn){
+      if(btn.dataset.wired) return; btn.dataset.wired = '1';
+      btn.addEventListener('click', function(){
+        var post = btn.closest('.post');
+        var text = post.querySelector('p').textContent;
+        if(btn.classList.contains('pinned')){
+          btn.classList.remove('pinned'); btn.lastChild.textContent = 'Pin to my profile';
+          pinTotal = Math.max(0, pinTotal - 1);
+          toast('Unpinned from your profile.');
+        } else {
+          btn.classList.add('pinned'); btn.lastChild.textContent = 'Pinned ✓';
+          pinTotal++;
+          var item = document.createElement('div');
+          item.className = 'pin-item';
+          item.innerHTML = '<svg class="pin-flag" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M16 3a1 1 0 0 1 .7 1.7L14 7.4V11h3a1 1 0 0 1 .7 1.7l-5 6A1 1 0 0 1 11 18V6.4L8.3 3.7A1 1 0 0 1 9 2h6a1 1 0 0 1 1 1Z" transform="rotate(35 12 12)"/></svg><div><p></p><div class="from">Pinned from the community board just now</div></div>';
+          item.querySelector('p').textContent = '"' + text + '"';
+          document.getElementById('pinned-list').appendChild(item);
+          toast('Pinned — it now shows on your profile (Step 3).');
+        }
+        document.getElementById('pin-count').textContent = pinTotal + ' pinned';
+      });
+    });
+  }
+  wirePost(document);
+
+  document.getElementById('post-btn').addEventListener('click', function(){
+    var input = document.getElementById('composer-input');
+    var text = input.value.trim();
+    if(!text){ toast('Write something first — your people are waiting.'); input.focus(); return; }
+    var article = document.createElement('article');
+    article.className = 'post';
+    article.innerHTML = '<div class="post-head"><span class="avatar-dot">R</span><div><b>@ricardi (you)</b><span>Boom Bap Archaeologist · Just now</span></div></div><p></p>' +
+      '<div class="post-actions">' +
+      '<button class="act like-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21.2l7.8-7.7 1-1a5.5 5.5 0 0 0 0-7.9z"/></svg><span class="like-count">0</span></button>' +
+      '<button class="act reply-toggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.4 8.4 0 0 1-8.5 8.4 8.6 8.6 0 0 1-3.8-.9L3 20l1.1-5.4a8.3 8.3 0 0 1-1-4.1A8.4 8.4 0 0 1 11.5 2h.9A8.4 8.4 0 0 1 21 11.5z"/></svg>0 replies</button>' +
+      '<button class="act pin-btn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 3a1 1 0 0 1 .7 1.7L14 7.4V11h3a1 1 0 0 1 .7 1.7l-5 6A1 1 0 0 1 11 18V6.4L8.3 3.7A1 1 0 0 1 9 2h6a1 1 0 0 1 1 1Z" transform="rotate(35 12 12)"/></svg>Pin to my profile</button></div>' +
+      '<div class="replies"></div>';
+    article.querySelector('p').textContent = text;
+    var list = document.getElementById('post-list');
+    list.insertBefore(article, list.firstChild);
+    wirePost(article);
+    input.value = '';
+    toast('Posted to Boom Bap Archaeologists.');
+  });
+
+  /* ---------- Explore ---------- */
+  document.querySelectorAll('#filter-row button').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      document.querySelectorAll('#filter-row button').forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      var f = btn.getAttribute('data-filter');
+      document.querySelectorAll('#explore-grid .comm-card').forEach(function(card){
+        card.style.display = (f === 'all' || card.getAttribute('data-genre') === f) ? '' : 'none';
+      });
+    });
+  });
+  document.querySelectorAll('.visit-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      toast('Visiting as a guest in the real build — your home board stays Boom Bap Archaeologists.');
+      showView('community');
+    });
+  });
+
+  showView('home');
+})();
+</script>
+</body>
+</html>
