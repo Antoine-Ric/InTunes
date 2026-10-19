@@ -11,10 +11,10 @@
         <relativePath/>
     </parent>
 
-    <groupId>com.situnes</groupId>
-    <artifactId>si-tunes</artifactId>
+    <groupId>com.intunes</groupId>
+    <artifactId>intunes</artifactId>
     <version>0.1.0-SNAPSHOT</version>
-    <name>si-tunes</name>
+    <name>intunes</name>
     <description>InTunes MVP: music taste profiling through head-to-head song matchups</description>
 
     <properties>

@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/situnes
-    username: situnes
-    password: situnes
+    url: jdbc:postgresql://localhost:5432/intunes
+    username: intunes
+    password: intunes
   jpa:
     hibernate:
       ddl-auto: update
@@ -11,7 +11,7 @@ spring:
       hibernate:
         format_sql: true
 
-situnes:
+intunes:
   spotify:
     # Register an app at https://developer.spotify.com/dashboard, then export:
     #   export SPOTIFY_CLIENT_ID=... SPOTIFY_CLIENT_SECRET=...
