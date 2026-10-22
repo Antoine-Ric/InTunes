@@ -41,5 +41,87 @@ public class Song {
     /** Release year. Feeds the archetype matrix (era). */
     private Integer releaseYear;
 
-    // TODO: getters/setters
+    protected Song() {
+        // JPA
+    }
+
+    public Song(String spotifyId, String title, String artist, String albumArtUrl,
+                String previewUrl, String genre, Integer popularity, Integer releaseYear) {
+        this.spotifyId = spotifyId;
+        this.title = title;
+        this.artist = artist;
+        this.albumArtUrl = albumArtUrl;
+        this.previewUrl = previewUrl;
+        this.genre = genre;
+        this.popularity = popularity;
+        this.releaseYear = releaseYear;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getSpotifyId() {
+        return spotifyId;
+    }
+
+    public void setSpotifyId(String spotifyId) {
+        this.spotifyId = spotifyId;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getArtist() {
+        return artist;
+    }
+
+    public void setArtist(String artist) {
+        this.artist = artist;
+    }
+
+    public String getAlbumArtUrl() {
+        return albumArtUrl;
+    }
+
+    public void setAlbumArtUrl(String albumArtUrl) {
+        this.albumArtUrl = albumArtUrl;
+    }
+
+    public String getPreviewUrl() {
+        return previewUrl;
+    }
+
+    public void setPreviewUrl(String previewUrl) {
+        this.previewUrl = previewUrl;
+    }
+
+    public String getGenre() {
+        return genre;
+    }
+
+    public void setGenre(String genre) {
+        this.genre = genre;
+    }
+
+    public Integer getPopularity() {
+        return popularity;
+    }
+
+    public void setPopularity(Integer popularity) {
+        this.popularity = popularity;
+    }
+
+    public Integer getReleaseYear() {
+        return releaseYear;
+    }
+
+    public void setReleaseYear(Integer releaseYear) {
+        this.releaseYear = releaseYear;
+    }
 }
