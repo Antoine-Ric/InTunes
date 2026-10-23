@@ -28,7 +28,13 @@
 
 Complete the application-facing entity APIs and persistence rules before building the core loop. The entities use JPA field access; getters/setters are needed by application code and templates, not for JPA to persist annotated fields.
 
-- [ ] Add appropriate constructors and accessors for **User, SongRating, Matchup, TasteProfile, Community, Post, Reply, Like**, preserving a public or protected no-argument constructor for JPA (Song is done) — [#14](https://github.com/Antoine-Ric/InTunes/issues/14)
+The entity APIs in #14 preserve the scaffold mappings. Before matchup persistence
+is implemented, [ADR-0003](adr/0003-run-lifecycle-retakes.md) requires explicit run
+identity and rating uniqueness per run/song, replacing the current user/song
+constraint. The migration work in #15 and repository work in #16 must account for
+this; profiles remain unique per user/genre and update in place.
+
+- [x] Add appropriate constructors and accessors for **User, SongRating, Matchup, TasteProfile, Community, Post, Reply, Like**, preserving a public or protected no-argument constructor for JPA (Song is done) — [#14](https://github.com/Antoine-Ric/InTunes/issues/14)
 - [ ] Introduce versioned database migrations (Flyway or Liquibase), including a baseline for existing local databases and creation of a fresh database; production `ddl-auto: validate` must run after migrations — [#15](https://github.com/Antoine-Ric/InTunes/issues/15)
 - [ ] Add database constraints and query indexes: unique likes per user/target, exactly one of post/reply on a Like, and canonical pair uniqueness within the chosen user/genre/run scope; preserve existing user/song-rating/profile/community uniqueness rules — [#15](https://github.com/Antoine-Ric/InTunes/issues/15)
 - [ ] Choose transaction and concurrency rules for vote recording, first-time rating creation, community creation, and pin swaps; use locking/versioning plus database constraints so simultaneous requests preserve invariants — [#15](https://github.com/Antoine-Ric/InTunes/issues/15)
