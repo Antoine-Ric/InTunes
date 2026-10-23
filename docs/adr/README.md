@@ -11,3 +11,4 @@ supersedes it and link the two.
 | [0001](0001-genre-catalog.md) | Launch genre catalog (7 genres) | Accepted |
 | [0002](0002-song-genre-membership.md) | A song belongs to exactly one genre | Accepted |
 | [0003](0003-run-lifecycle-retakes.md) | Retakes are supported; every run has its own identity | Accepted |
+| [0004](0004-preview-eligibility.md) | Songs without previews stay eligible, with an honest unavailable state | Accepted |
