@@ -11,6 +11,11 @@ Start the application normally. `V1` creates the original scaffold tables;
 records applied checksums and does nothing on the next startup. Never edit an
 applied migration; add the next version instead. Flyway clean is disabled.
 
+`V3` snapshots each run's round limit and adds persisted issued-pair identities,
+one pending pair per run, and unordered pair/round uniqueness. Databases already
+at V2 upgrade automatically on normal startup; the baseline profile is not needed
+again. See [pairing and resume rules](MATCHUP_PAIRING.md).
+
 The datasource accepts `DATABASE_URL` (a JDBC PostgreSQL URL),
 `DATABASE_USERNAME`, and `DATABASE_PASSWORD`; defaults still match Docker Compose.
 

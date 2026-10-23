@@ -165,6 +165,7 @@ LIMIT 10;
 SELECT 'users' AS table_name, COUNT(*) AS row_count FROM users
 UNION ALL SELECT 'songs', COUNT(*) FROM songs
 UNION ALL SELECT 'matchup_runs', COUNT(*) FROM matchup_runs
+UNION ALL SELECT 'issued_matchup_pairs', COUNT(*) FROM issued_matchup_pairs
 UNION ALL SELECT 'song_ratings', COUNT(*) FROM song_ratings
 UNION ALL SELECT 'matchups', COUNT(*) FROM matchups
 UNION ALL SELECT 'taste_profiles', COUNT(*) FROM taste_profiles
@@ -193,10 +194,21 @@ After upgrading the original local database, the initial history is:
 |---|---|---|---|
 | 1 | `<< Flyway Baseline >>` | `BASELINE` | `t` |
 | 2 | `runs integrity and indexes` | `SQL` | `t` |
+| 3 | `issued matchup pairs` | `SQL` | `t` |
 
 `t` means true: that step succeeded. A fresh database records version 1 as a
 `SQL` migration named `scaffold baseline` instead. Future migrations add more
 entries, so additional rows are expected as the project develops.
+
+Version 3 is added when the application starts with the pairing/resume changes.
+To see the pairs the server has issued:
+
+```sql
+SELECT id, run_id, song_a_id, song_b_id, round_number, status, issued_at
+FROM issued_matchup_pairs
+ORDER BY issued_at DESC, id
+LIMIT 10;
+```
 
 On October 23, 2026, the existing local database was backed up, registered as
 version 1, and upgraded to version 2. Normal startup was then verified with an

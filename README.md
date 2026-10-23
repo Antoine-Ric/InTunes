@@ -26,8 +26,8 @@ inspect the local database, browse records, and check migration history.
 
 | Package | What's there |
 |---|---|
-| `domain` | 9 entities: User, Song, Matchup, SongRating, TasteProfile, Community, Post, Reply, Like |
-| `repository` | Spring Data JPA interfaces (done, they're one-liners) |
+| `domain` | 11 entities: User, Song, MatchupRun, IssuedMatchupPair, Matchup, SongRating, TasteProfile, Community, Post, Reply, Like |
+| `repository` | Spring Data queries for runs, issued pairs, ratings, profiles, and boards; locking and idempotent insert primitives |
 | `service` | Stubs with signatures + TODOs: EloRatingService, MatchupService, TasteProfileService, CommunityService, SpotifyClient, ITunesClient |
 | `web` | PageController (Thymeleaf routes), MatchupController + CommunityController (JSON APIs, stubbed) |
 | `dto` | SongDto, MatchupPair records |

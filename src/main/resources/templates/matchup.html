@@ -95,7 +95,8 @@
 
     <div class="arena-foot">
       <span class="lean">Every pick moves both songs' <b>Elo ratings</b>: winners climb, losers fall. Sixteen rounds is enough for a stable ranking.</span>
-      <button class="btn ghost small" id="skip-btn">Skip this pair</button>
+      <!-- Live skips are deferred; an issued live pair remains until voted on. -->
+      <button th:if="${pair == null}" class="btn ghost small" id="skip-btn">Skip this pair</button>
     </div>
     <div class="reveal-box" id="reveal-box">
       <h3>That is a profile.</h3>
