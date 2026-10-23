@@ -23,6 +23,14 @@ intunes:
     # No key needed. https://itunes.apple.com/search?term=...&entity=song -> previewUrl
     # Used for: 30-second song previews in the matchup arena.
     base-url: https://itunes.apple.com
+  lastfm:
+    # Register an API account at https://www.last.fm/api/account/create, then export:
+    #   export LASTFM_API_KEY=... LASTFM_SHARED_SECRET=...
+    # Used for: genre tag charts to draft seed lists (tag.gettoptracks).
+    # Only the API key is needed for read-only calls.
+    api-key: ${LASTFM_API_KEY:}
+    shared-secret: ${LASTFM_SHARED_SECRET:}
+    base-url: https://ws.audioscrobbler.com/2.0/
   matchup:
     rounds-per-genre: 16
     elo-k-factor: 32
