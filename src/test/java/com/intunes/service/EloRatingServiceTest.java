@@ -1,6 +1,8 @@
 package com.intunes.service;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -57,5 +59,87 @@ class EloRatingServiceTest {
         double[] underdogWin = elo.update(1400, 1700);
         double[] favoriteWin = elo.update(1700, 1400);
         assertTrue(underdogWin[0] - 1400 > favoriteWin[0] - 1700);
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "1500, 1500, 0.5",
+            "1900, 1500, 0.9090909090909091",
+            "1500, 1900, 0.09090909090909091",
+            "2300, 1500, 0.9900990099009901",
+            "1500, 2300, 0.009900990099009901"
+    })
+    void expectedScores_followLogisticCurveAndSumToOne(double ratingA, double ratingB,
+                                                      double expected) {
+        double scoreA = EloRatingService.expectedScore(ratingA, ratingB);
+        double scoreB = EloRatingService.expectedScore(ratingB, ratingA);
+
+        assertEquals(expected, scoreA, 1e-12);
+        assertEquals(1.0, scoreA + scoreB, 1e-12);
+    }
+
+    @Test
+    void update_preservesFractionalPrecision() {
+        // A 400-point favorite gains exactly K/11; retain all precision internally.
+        double gain = 32.0 / 11.0;
+        assertArrayEquals(new double[]{1900.25 + gain, 1500.25 - gain},
+                elo.update(1900.25, 1500.25), 1e-12);
+    }
+
+    @Test
+    void zeroKFactor_leavesRatingsUnchanged() {
+        EloRatingService frozen = new EloRatingService(0.0);
+        assertArrayEquals(new double[]{1423.75, 1786.125},
+                frozen.update(1423.75, 1786.125), 0.0);
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "0, 0",
+            "1623.5, 1488.25",
+            "-400.25, 200.75",
+            "1000000, -1000000",
+            "-1000000, 1000000"
+    })
+    void update_keepsChangesFiniteBoundedAndZeroSum(double winner, double loser) {
+        double[] result = elo.update(winner, loser);
+        double gain = result[0] - winner;
+        double loss = loser - result[1];
+
+        assertTrue(Double.isFinite(result[0]));
+        assertTrue(Double.isFinite(result[1]));
+        assertTrue(gain >= 0.0 && gain <= 32.0);
+        assertTrue(loss >= 0.0 && loss <= 32.0);
+        assertEquals(gain, loss, 1e-9);
+        assertEquals(winner + loser, result[0] + result[1], 1e-9);
+    }
+
+    @Test
+    void shiftingBothRatings_preservesRatingChanges() {
+        double[] original = elo.update(1423.75, 1786.125);
+        double[] shifted = elo.update(2423.75, 2786.125);
+
+        assertArrayEquals(new double[]{original[0] + 1000, original[1] + 1000},
+                shifted, 1e-9);
+    }
+
+    @Test
+    void repeatedWins_haveDiminishingGainsAndConserveTotalRating() {
+        double winner = 1500.0;
+        double loser = 1500.0;
+        double previousGain = Double.POSITIVE_INFINITY;
+
+        for (int round = 0; round < 1000; round++) {
+            double[] result = elo.update(winner, loser);
+            double gain = result[0] - winner;
+
+            assertTrue(gain > 0.0 && gain < previousGain,
+                    "Winner's gain should diminish at round " + round);
+            assertEquals(3000.0, result[0] + result[1], 1e-9);
+
+            winner = result[0];
+            loser = result[1];
+            previousGain = gain;
+        }
     }
 }
