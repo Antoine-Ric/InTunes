@@ -3,6 +3,7 @@ package com.intunes.service;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.intunes.config.LastFmConfig;
 import com.intunes.dto.SeedTrack;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
@@ -23,6 +24,7 @@ public class LastFmClient {
     private final LastFmConfig config;
     private final RestClient restClient;
 
+    @Autowired
     public LastFmClient(LastFmConfig config) {
         this(config, RestClient.builder().build());
     }

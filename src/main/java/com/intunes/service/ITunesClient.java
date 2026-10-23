@@ -1,6 +1,7 @@
 package com.intunes.service;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
@@ -21,6 +22,7 @@ public class ITunesClient {
     private final String baseUrl;
     private final RestClient restClient;
 
+    @Autowired
     public ITunesClient(@Value("${intunes.itunes.base-url}") String baseUrl) {
         this(baseUrl, RestClient.builder().build());
     }

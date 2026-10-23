@@ -6,6 +6,7 @@ import com.intunes.config.SpotifyConfig;
 import com.intunes.dto.SpotifyTrack;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
@@ -45,6 +46,7 @@ public class SpotifyClient {
     private volatile String accessToken;
     private volatile Instant tokenExpiresAt = Instant.EPOCH;
 
+    @Autowired
     public SpotifyClient(SpotifyConfig config) {
         this(config, RestClient.builder().build());
     }

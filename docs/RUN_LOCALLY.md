@@ -77,3 +77,24 @@ From the project root:
 ```bash
 mvn -Dtest=EloRatingServiceTest test
 ```
+
+## Run all tests, including application startup
+
+Start Docker Desktop, then run from the project root with Java 21:
+
+```bash
+mvn test
+```
+
+`InTunesApplicationTest` starts the complete Spring web application on a random
+port against an isolated PostgreSQL 16 container. It verifies provider-client
+injection, the database/schema connection, and an HTTP 200 response from the home
+page. Testcontainers creates and removes the test database container automatically;
+the development database is not used. The first run may download container images.
+No `.env` file or live provider credentials are needed for these tests.
+
+To run just the startup regression tests:
+
+```bash
+mvn -Dtest=InTunesApplicationTest test
+```
