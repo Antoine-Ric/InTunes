@@ -2,6 +2,9 @@
 
 These steps use Docker for PostgreSQL and VS Code to launch the Spring Boot app.
 
+For Docker Desktop navigation, local database connection details, and SQL commands
+to inspect tables and migration history, see [Docker Desktop and SQL reference](DOCKER_DESKTOP_AND_SQL.md).
+
 ## Requirements
 
 - Java 21 and Maven.

@@ -10,6 +10,9 @@ Follow the [local startup guide](docs/RUN_LOCALLY.md) for prerequisites,
 PostgreSQL setup, loading `.env` secrets with VS Code, launching the app,
 and stopping it when finished.
 
+Use the [Docker Desktop and SQL reference](docs/DOCKER_DESKTOP_AND_SQL.md) to
+inspect the local database, browse records, and check migration history.
+
 ## Data sources (important)
 
 - **Spotify Web API** (client-credentials): track metadata, album art, popularity,
