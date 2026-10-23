@@ -18,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest(showSql = false, properties = {
         "debug=false",
-        "spring.jpa.hibernate.ddl-auto=create-drop",
+        "spring.jpa.hibernate.ddl-auto=validate",
         "spring.jpa.show-sql=false"
 })
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -108,7 +108,7 @@ class EntityPersistenceTest {
     @Test
     void editsArePersistedWithoutReplacingIdentityOrCreationTime() {
         Fixture fixture = persistFixture();
-        SongRating configuredRating = entities.persist(new SongRating(fixture.user(), fixture.songB(), 1600.0));
+        SongRating configuredRating = entities.persist(new SongRating(fixture.rating().getRun(), fixture.songB(), 1600.0));
         entities.flush();
         entities.clear();
 
@@ -176,9 +176,11 @@ class EntityPersistenceTest {
         User user = entities.persist(new User("listener", "encoded-password", "Listener"));
         Song songA = entities.persist(new Song("track-a", "Song A", "Artist A", null, null, "gospel", 50, 1995));
         Song songB = entities.persist(new Song("track-b", "Song B", "Artist B", null, null, "gospel", 80, 2020));
-        SongRating rating = entities.persist(new SongRating(user, songA));
-        Matchup vote = entities.persist(new Matchup(user, songA, songB, songB, "gospel"));
-        TasteProfile profile = entities.persist(new TasteProfile(user, "gospel", "GOSPEL_DEEP_90S", "Test archetype"));
+        MatchupRun run = entities.persist(new MatchupRun(user, "gospel"));
+        SongRating rating = entities.persist(new SongRating(run, songA));
+        Matchup vote = entities.persist(new Matchup(run, songA, songB, songB));
+        run.complete();
+        TasteProfile profile = entities.persist(new TasteProfile(run, "GOSPEL_DEEP_90S", "Test archetype"));
         Community community = entities.persist(new Community("GOSPEL_DEEP_90S", "Test community", null));
         Post post = entities.persist(new Post(community, user, "A song worth sharing"));
         Reply reply = entities.persist(new Reply(post, user, "Agreed"));

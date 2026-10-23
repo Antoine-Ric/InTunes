@@ -3,14 +3,12 @@ package com.intunes.domain;
 import jakarta.persistence.*;
 
 /**
- * A user's Elo rating for one song within one genre.
+ * A user's Elo rating for one song within one run.
  * Starts at 1500, moves with every matchup via EloRatingService.
- * TODO (ADR-0003): scope this entity and its uniqueness to a run before
- * implementing matchup persistence; the current mapping is the scaffold.
  */
 @Entity
 @Table(name = "song_ratings",
-       uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "song_id"}))
+       uniqueConstraints = @UniqueConstraint(columnNames = {"run_id", "song_id"}))
 public class SongRating {
 
     @Id
@@ -19,6 +17,15 @@ public class SongRating {
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private User user;
+
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    private MatchupRun run;
+
+    @Column(nullable = false, length = 50)
+    private String genre;
+
+    @Version
+    private long version;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Song song;
@@ -33,13 +40,18 @@ public class SongRating {
         // JPA
     }
 
-    public SongRating(User user, Song song) {
-        this(user, song, 1500.0);
+    public SongRating(MatchupRun run, Song song) {
+        this(run, song, 1500.0);
     }
 
     /** Allows the service to supply intunes.matchup.elo-start-rating. */
-    public SongRating(User user, Song song, double initialRating) {
-        this.user = user;
+    public SongRating(MatchupRun run, Song song, double initialRating) {
+        if (!run.getGenre().equals(song.getGenre())) {
+            throw new IllegalArgumentException("Song must belong to the run's genre");
+        }
+        this.run = run;
+        this.user = run.getUser();
+        this.genre = run.getGenre();
         this.song = song;
         this.rating = initialRating;
     }
@@ -47,6 +59,10 @@ public class SongRating {
     public Long getId() {
         return id;
     }
+
+    public MatchupRun getRun() { return run; }
+    public String getGenre() { return genre; }
+    public long getVersion() { return version; }
 
     public User getUser() {
         return user;

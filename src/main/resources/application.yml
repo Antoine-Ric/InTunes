@@ -1,11 +1,14 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/intunes
-    username: intunes
-    password: intunes
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/intunes}
+    username: ${DATABASE_USERNAME:intunes}
+    password: ${DATABASE_PASSWORD:intunes}
+  flyway:
+    baseline-on-migrate: false
+    clean-disabled: true
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     show-sql: true
     properties:
       hibernate:

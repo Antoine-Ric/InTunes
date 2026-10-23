@@ -5,7 +5,7 @@ import java.time.Instant;
 
 /**
  * One head-to-head vote: the user picked winner over loser.
- * TODO (ADR-0003): add run identity before implementing vote persistence.
+ * Votes and canonical pair uniqueness belong to one run (ADR-0003).
  */
 @Entity
 @Table(name = "matchups")
@@ -17,6 +17,9 @@ public class Matchup {
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private User user;
+
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    private MatchupRun run;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Song songA;
@@ -37,17 +40,20 @@ public class Matchup {
         // JPA
     }
 
-    public Matchup(User user, Song songA, Song songB, Song winner, String genre) {
-        this.user = user;
+    public Matchup(MatchupRun run, Song songA, Song songB, Song winner) {
+        this.run = run;
+        this.user = run.getUser();
         this.songA = songA;
         this.songB = songB;
         this.winner = winner;
-        this.genre = genre;
+        this.genre = run.getGenre();
     }
 
     public Long getId() {
         return id;
     }
+
+    public MatchupRun getRun() { return run; }
 
     public User getUser() {
         return user;

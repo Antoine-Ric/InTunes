@@ -30,6 +30,7 @@ and stopping it when finished.
 | `dto` | SongDto, MatchupPair records |
 | `templates` | 6 pages: index, genres, matchup, profile, community, explore |
 | `config` | SpotifyConfig, SecurityConfig (permissive for now — TODO: lock down) |
+| `db/migration` | Flyway schema creation, run-scoped integrity constraints, and indexes; see [persistence rules](docs/PERSISTENCE.md) |
 
 ## Build order (your bodies to write)
 
