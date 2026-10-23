@@ -32,11 +32,20 @@ public class MatchupRun {
     @Version
     private long version;
 
+    @Column(nullable = false)
+    private int roundLimit = 16;
+
     protected MatchupRun() { }
 
     public MatchupRun(User user, String genre) {
+        this(user, genre, 16);
+    }
+
+    public MatchupRun(User user, String genre, int roundLimit) {
+        if (roundLimit < 1) throw new IllegalArgumentException("Round limit must be positive");
         this.user = Objects.requireNonNull(user, "user");
         this.genre = Objects.requireNonNull(genre, "genre");
+        this.roundLimit = roundLimit;
     }
 
     public void complete() { finish(Status.COMPLETED); }
@@ -55,4 +64,5 @@ public class MatchupRun {
     public Instant getStartedAt() { return startedAt; }
     public Instant getFinishedAt() { return finishedAt; }
     public long getVersion() { return version; }
+    public int getRoundLimit() { return roundLimit; }
 }

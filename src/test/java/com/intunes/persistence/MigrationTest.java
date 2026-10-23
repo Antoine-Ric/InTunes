@@ -45,9 +45,9 @@ class MigrationTest {
     @Test
     void freshDatabaseMigratesAndSecondStartupDoesNothing() {
         Flyway flyway = configuration().load();
-        assertThat(flyway.migrate().migrationsExecuted).isEqualTo(2);
+        assertThat(flyway.migrate().migrationsExecuted).isEqualTo(3);
         assertThat(flyway.migrate().migrationsExecuted).isZero();
-        assertThat(flyway.info().current().getVersion().getVersion()).isEqualTo("2");
+        assertThat(flyway.info().current().getVersion().getVersion()).isEqualTo("3");
         assertThat(jdbc.queryForObject("select count(*) from matchup_runs", Long.class)).isZero();
     }
 
@@ -58,7 +58,7 @@ class MigrationTest {
         jdbc.execute("alter table song_ratings rename constraint uq_ratings_user_song to uk_legacy_random_name");
         jdbc.execute("drop table flyway_schema_history");
         Flyway flyway = configuration().baselineOnMigrate(true).baselineVersion("1").load();
-        assertThat(flyway.migrate().migrationsExecuted).isEqualTo(1);
+        assertThat(flyway.migrate().migrationsExecuted).isEqualTo(2);
         assertThat(jdbc.queryForObject("select count(*) from flyway_schema_history where type = 'BASELINE'", Long.class)).isEqualTo(1);
         assertThat(jdbc.queryForObject("select count(*) from songs", Long.class)).isEqualTo(3);
         assertThat(jdbc.queryForObject("select count(*) from songs where preview_url is null", Long.class)).isEqualTo(3);
@@ -86,6 +86,54 @@ class MigrationTest {
         jdbc.execute("drop table flyway_schema_history");
         assertThatThrownBy(() -> configuration().load().migrate()).isInstanceOf(FlywayException.class)
                 .hasMessageContaining("non-empty");
+    }
+
+    @Test
+    void v2UpgradePreservesHistoryAndAddsRoundSnapshotsAndIssuedIdentities() {
+        legacyDatabase();
+        configuration().target("2").load().migrate();
+        assertThat(configuration().load().migrate().migrationsExecuted).isEqualTo(1);
+        assertThat(jdbc.queryForObject("select count(*) from issued_matchup_pairs", Long.class)).isZero();
+        assertThat(jdbc.queryForObject("select min(round_limit) from matchup_runs", Integer.class)).isEqualTo(16);
+        assertThat(jdbc.queryForObject("select count(*) from matchups", Long.class)).isEqualTo(1);
+        assertThat(jdbc.queryForObject("select rating from song_ratings where id=1", Double.class)).isEqualTo(1532);
+        assertThat(jdbc.queryForObject("select id from taste_profiles", Long.class)).isEqualTo(1);
+        seedIssuedPair();
+        assertThat(jdbc.queryForObject("select status from issued_matchup_pairs", String.class)).isEqualTo("ISSUED");
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "update issued_matchup_pairs set status='VOTED',resolved_at=now()",
+            "update issued_matchup_pairs set resolved_at=now()",
+            "update issued_matchup_pairs set status='VOTED',vote_id=2",
+            "update issued_matchup_pairs set round_number=0",
+            "update issued_matchup_pairs set song_b_id=song_a_id",
+            "update issued_matchup_pairs set song_b_id=3",
+            "update issued_matchup_pairs set user_id=2",
+            "update issued_matchup_pairs set status='VOTED',vote_id=1,resolved_at=now()",
+            "update issued_matchup_pairs set status='SKIPPED'",
+            "insert into issued_matchup_pairs(id,run_id,user_id,genre,song_a_id,song_b_id,round_number,status,issued_at) select gen_random_uuid(),run_id,user_id,genre,1,4,2,'ISSUED',now() from issued_matchup_pairs",
+            "update issued_matchup_pairs set status='VOTED',vote_id=2,resolved_at=now(); insert into issued_matchup_pairs(id,run_id,user_id,genre,song_a_id,song_b_id,round_number,status,issued_at) select gen_random_uuid(),run_id,user_id,genre,2,1,2,'ISSUED',now() from issued_matchup_pairs",
+            "update issued_matchup_pairs set status='VOTED',vote_id=2,resolved_at=now(); insert into issued_matchup_pairs(id,run_id,user_id,genre,song_a_id,song_b_id,round_number,status,issued_at) select gen_random_uuid(),run_id,user_id,genre,1,4,1,'ISSUED',now() from issued_matchup_pairs"
+    })
+    void databaseRejectsInvalidIssuedPairStateAndIdentity(String invalidSql) {
+        legacyDatabase();
+        configuration().load().migrate();
+        seedIssuedPair();
+        assertThatThrownBy(() -> jdbc.execute(invalidSql)).isInstanceOf(DataAccessException.class);
+    }
+
+    private void seedIssuedPair() {
+        jdbc.execute("""
+                insert into songs(spotify_id,title,artist,genre) values ('spotify-d','Song D','Artist','rnb');
+                insert into matchup_runs(user_id,genre,status,started_at) values (1,'rnb','IN_PROGRESS',now());
+                insert into issued_matchup_pairs(id,run_id,user_id,genre,song_a_id,song_b_id,round_number,status,issued_at)
+                    select gen_random_uuid(),id,1,'rnb',1,2,1,'ISSUED',now() from matchup_runs
+                    where user_id=1 and status='IN_PROGRESS';
+                insert into matchups(run_id,user_id,genre,songa_id,songb_id,winner_id,created_at)
+                    select id,1,'rnb',1,2,1,now() from matchup_runs where user_id=1 and status='IN_PROGRESS';
+                """);
     }
 
     @Test

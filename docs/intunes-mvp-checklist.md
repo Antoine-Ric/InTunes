@@ -65,18 +65,20 @@ transaction boundaries, locks, indexes, and verification.
 
 ## Phase 3 — MatchupService (the core loop)
 
-The previously referenced `hidden_files/intunes-nextpair-design-notes.md` is absent from this checkout. Keep the pairing design in a tracked document under `docs/` before relying on it.
+The tracked [pairing and resume design](MATCHUP_PAIRING.md) replaces the missing
+`hidden_files/intunes-nextpair-design-notes.md`. All rounds, exposure, pairing
+uniqueness and completion are scoped to a run under ADR-0003.
 
-- [ ] `nextPair(user, genre)`: rounds 1–4 random pairs; rounds 5+ Swiss-style (nearest-rated unpaired song); a pairing never repeats in either order; round = user's genre matchup count + 1; totalRounds = 16 from `intunes.matchup.rounds-per-genre` — [#22](https://github.com/Antoine-Ric/InTunes/issues/22)
-- [ ] Define song exposure and tie-breaking so equally rated songs have a predictable selection rule and a few songs do not monopolize the run — [#22](https://github.com/Antoine-Ric/InTunes/issues/22)
-- [ ] Preserve the issued pair across refresh/resume until voted on or explicitly skipped; store or validate its identity on the server — [#23](https://github.com/Antoine-Ric/InTunes/issues/23)
+- [x] `nextPair(user, genre)`: exposure-aware random rounds 1–4, nearest-rated unused opponents from round 5, no unordered repeats, and round = current run's vote count + 1; snapshot the configured round target (default 16) per run — [#22](https://github.com/Antoine-Ric/InTunes/issues/22)
+- [x] Define exposure and deterministic Swiss ties: least-exposed anchor, nearest-rated opponent, then opponent exposure and song ID — [#22](https://github.com/Antoine-Ric/InTunes/issues/22)
+- [x] Persist issued pair UUID, run/owner/songs/round and resolution; refresh and concurrent requests preserve the unanswered pair across service restarts — [#23](https://github.com/Antoine-Ric/InTunes/issues/23)
 - [ ] `recordResult(user, winnerId, loserId, genre)`: persist the Matchup, lazy-create SongRating rows using `intunes.matchup.elo-start-rating`, run `EloRatingService.update()`, save both ratings, and increment `matchupsPlayed` in one transaction — [#24](https://github.com/Antoine-Ric/InTunes/issues/24)
 - [ ] Validate votes: authenticated user, supported genre, two distinct existing eligible songs in that genre, pair actually issued to this user/run, and run still open — [#24](https://github.com/Antoine-Ric/InTunes/issues/24)
 - [ ] Make vote submission idempotent: duplicate clicks, retries after a timeout, reversed/replayed pairs, and simultaneous tabs must not double-count a vote or lose a rating change; reject stale/conflicting submissions cleanly — [#24](https://github.com/Antoine-Ric/InTunes/issues/24)
-- [ ] Define skip behavior: whether it affects the round counter, whether a skipped pair can return, and what happens when all remaining pairs are skipped. Wire a live skip action or remove the live skip button — [#23](https://github.com/Antoine-Ric/InTunes/issues/23)
-- [ ] `isComplete(user, genre)`: true when the count hits 16 **or** every possible pair is exhausted — [#22](https://github.com/Antoine-Ric/InTunes/issues/22)
-- [ ] Edge cases: genre with fewer than 2 eligible songs returns a clean domain error; completion and pair exhaustion use the same eligibility and skip rules as `nextPair` — [#22](https://github.com/Antoine-Ric/InTunes/issues/22)
-- [ ] Tests, same style as the Elo tests: fresh user gets two distinct songs at round 1; pairs get rating-closer after results exist; no pair ever repeats across a full run; single-song genre signals empty — [#22](https://github.com/Antoine-Ric/InTunes/issues/22)
+- [x] Defer live skipping and render its button only in demo mode. Live pairs stay until voted on or the attempt is explicitly abandoned; skips cannot change rounds, repeatability or exhaustion — [#23](https://github.com/Antoine-Ric/InTunes/issues/23)
+- [x] `isComplete` persists completion when the current run reaches its target **or** exhausts all unordered pairs; completed runs require an explicit retake — [#22](https://github.com/Antoine-Ric/InTunes/issues/22)
+- [x] Zero/one-song pools fail with a clean domain error; pairing and completion both include previewless songs and use the same vote/exhaustion rules — [#22](https://github.com/Antoine-Ric/InTunes/issues/22)
+- [x] Policy and PostgreSQL service tests cover fresh pairs, Swiss closeness/ties, exposure, full-run non-repetition, small-pool exhaustion, owner/genre isolation, retakes, completion commits and concurrent refreshes — [#22](https://github.com/Antoine-Ric/InTunes/issues/22)
 - [ ] Integration tests: refresh/resume, user/genre isolation, custom starting rating, atomic rollback on failure, concurrent votes, duplicate submissions, invalid song IDs, and rejection after completion — [#24](https://github.com/Antoine-Ric/InTunes/issues/24)
 - [ ] Wire `MatchupController.vote` to `recordResult` (it currently throws) — [#25](https://github.com/Antoine-Ric/InTunes/issues/25)
 - [ ] Temporary current-user: use a persisted demo user behind a local-only profile until auth lands; ensure production cannot enable it — [#25](https://github.com/Antoine-Ric/InTunes/issues/25)
