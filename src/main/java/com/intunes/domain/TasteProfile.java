@@ -7,7 +7,7 @@ import java.time.Instant;
  * The named music profile produced after a user finishes a genre's matchup rounds.
  * archetypeKey (e.g. "HIPHOP_DEEP_90S") maps 1:1 to a Community.
  * ADR-0003: update this user/genre profile in place from the latest completed
- * run only; run-scoped rating queries are a prerequisite for profile building.
+ * run only. The profile retains its identity when a retake replaces its result.
  */
 @Entity
 @Table(name = "taste_profiles",
@@ -20,6 +20,12 @@ public class TasteProfile {
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private User user;
+
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    private MatchupRun run;
+
+    @Version
+    private long version;
 
     @Column(nullable = false, length = 50)
     private String genre;
@@ -39,9 +45,22 @@ public class TasteProfile {
         // JPA
     }
 
-    public TasteProfile(User user, String genre, String archetypeKey, String archetypeName) {
-        this.user = user;
-        this.genre = genre;
+    public TasteProfile(MatchupRun run, String archetypeKey, String archetypeName) {
+        this.user = run.getUser();
+        this.genre = run.getGenre();
+        updateFromRun(run, archetypeKey, archetypeName);
+    }
+
+    public void updateFromRun(MatchupRun run, String archetypeKey, String archetypeName) {
+        if (run.getStatus() != MatchupRun.Status.COMPLETED) {
+            throw new IllegalArgumentException("Profile requires a completed run");
+        }
+        if (!genre.equals(run.getGenre()) ||
+                (user != run.getUser() && (user.getId() == null ||
+                        !java.util.Objects.equals(user.getId(), run.getUser().getId())))) {
+            throw new IllegalArgumentException("Profile owner and genre cannot change");
+        }
+        this.run = run;
         this.archetypeKey = archetypeKey;
         this.archetypeName = archetypeName;
     }
@@ -49,6 +68,9 @@ public class TasteProfile {
     public Long getId() {
         return id;
     }
+
+    public MatchupRun getRun() { return run; }
+    public long getVersion() { return version; }
 
     public User getUser() {
         return user;

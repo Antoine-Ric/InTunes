@@ -28,24 +28,25 @@
 
 Complete the application-facing entity APIs and persistence rules before building the core loop. The entities use JPA field access; getters/setters are needed by application code and templates, not for JPA to persist annotated fields.
 
-The entity APIs in #14 preserve the scaffold mappings. Before matchup persistence
-is implemented, [ADR-0003](adr/0003-run-lifecycle-retakes.md) requires explicit run
-identity and rating uniqueness per run/song, replacing the current user/song
-constraint. The migration work in #15 and repository work in #16 must account for
-this; profiles remain unique per user/genre and update in place.
+The migrations in #15 implement [ADR-0003](adr/0003-run-lifecycle-retakes.md):
+explicit run identity and rating uniqueness per run/song replace the scaffold's
+user/song constraint. Queries in #16 keep live rounds scoped to a run and profile
+reads scoped to the latest completed run. Profiles remain unique per user/genre
+and update in place. See [persistence rules](PERSISTENCE.md) for baselining,
+transaction boundaries, locks, indexes, and verification.
 
 - [x] Add appropriate constructors and accessors for **User, SongRating, Matchup, TasteProfile, Community, Post, Reply, Like**, preserving a public or protected no-argument constructor for JPA (Song is done) — [#14](https://github.com/Antoine-Ric/InTunes/issues/14)
-- [ ] Introduce versioned database migrations (Flyway or Liquibase), including a baseline for existing local databases and creation of a fresh database; production `ddl-auto: validate` must run after migrations — [#15](https://github.com/Antoine-Ric/InTunes/issues/15)
-- [ ] Add database constraints and query indexes: unique likes per user/target, exactly one of post/reply on a Like, and canonical pair uniqueness within the chosen user/genre/run scope; preserve existing user/song-rating/profile/community uniqueness rules — [#15](https://github.com/Antoine-Ric/InTunes/issues/15)
-- [ ] Choose transaction and concurrency rules for vote recording, first-time rating creation, community creation, and pin swaps; use locking/versioning plus database constraints so simultaneous requests preserve invariants — [#15](https://github.com/Antoine-Ric/InTunes/issues/15)
-- [ ] `MatchupRepository`: add `findByUserAndGenre` and `countByUserAndGenre` — [#16](https://github.com/Antoine-Ric/InTunes/issues/16)
-- [ ] `SongRatingRepository`: add `findByUserAndSong`, a "ratings for these songs" query (`findByUserAndSongIn`), and a top-rated query for the profile page (user + genre, order by rating desc) — [#16](https://github.com/Antoine-Ric/InTunes/issues/16)
-- [ ] `TasteProfileRepository`: add `findByUserAndGenre` — [#16](https://github.com/Antoine-Ric/InTunes/issues/16)
-- [ ] `CommunityRepository`: add `findByArchetypeKey` — [#16](https://github.com/Antoine-Ric/InTunes/issues/16)
-- [ ] `PostRepository`: add a paginated board query (community, newest first, `Pageable`) — [#16](https://github.com/Antoine-Ric/InTunes/issues/16)
-- [ ] `ReplyRepository`: add `findByPost` (oldest first) and a way to find a user's currently pinned reply; adapt the result to the profile template's `pinnedReplies` list — [#16](https://github.com/Antoine-Ric/InTunes/issues/16)
-- [ ] **Create `LikeRepository`** (it doesn't exist yet): `existsByUserAndPost` for idempotent likes, `countByPost` for like counts — [#16](https://github.com/Antoine-Ric/InTunes/issues/16)
-- [ ] `UserRepository`: add `findByUsername` (auth needs it later; add it now while you're in there) — [#16](https://github.com/Antoine-Ric/InTunes/issues/16)
+- [x] Introduce versioned Flyway migrations, including an explicit baseline for existing local databases and creation of a fresh database; `ddl-auto: validate` runs after migrations — [#15](https://github.com/Antoine-Ric/InTunes/issues/15)
+- [x] Add database constraints and query indexes: unique likes per user/target, exactly one target on a Like, canonical pair uniqueness per run, one active run per user/genre, one pin per author, and rating uniqueness per run/song; preserve user/profile/community uniqueness — [#15](https://github.com/Antoine-Ric/InTunes/issues/15)
+- [x] Define transaction and concurrency rules for votes, first ratings, community creation, and pin swaps; provide locks, versions, upserts and database constraints, verified with competing PostgreSQL transactions — [#15](https://github.com/Antoine-Ric/InTunes/issues/15)
+- [x] `MatchupRepository`: `findByUserAndGenre` and `countByUserAndGenre` for history, explicit run queries for rounds — [#16](https://github.com/Antoine-Ric/InTunes/issues/16)
+- [x] `SongRatingRepository`: `findByUserAndSong`, `findByUserAndSongIn`, latest-completed user/genre ranking, and explicit run queries with stable rating/song ordering — [#16](https://github.com/Antoine-Ric/InTunes/issues/16)
+- [x] `TasteProfileRepository`: `findByUserAndGenre` — [#16](https://github.com/Antoine-Ric/InTunes/issues/16)
+- [x] `CommunityRepository`: `findByArchetypeKey` and atomic `insertIfAbsent` — [#16](https://github.com/Antoine-Ric/InTunes/issues/16)
+- [x] `PostRepository`: paginated community board query, newest first with ID tie-break — [#16](https://github.com/Antoine-Ric/InTunes/issues/16)
+- [x] `ReplyRepository`: oldest-first `findByPost`, current pin query, and projection matching the profile's `pinnedReplies` list — [#16](https://github.com/Antoine-Ric/InTunes/issues/16)
+- [x] `LikeRepository`: `existsByUserAndPost`, `countByPost`, reply equivalents, and idempotent insert primitives — [#16](https://github.com/Antoine-Ric/InTunes/issues/16)
+- [x] `UserRepository`: `findByUsername` and user-row locking — [#16](https://github.com/Antoine-Ric/InTunes/issues/16)
 - [ ] Lock the genre list: the scaffold comment names 6 (hiphop, rnb, afrobeats, pop, rock, latin); the original MVP scope said 5 genres × 25 songs. Pick the final list, it drives seeding and the archetype table below — [#13](https://github.com/Antoine-Ric/InTunes/issues/13)
 - [ ] Decide whether a song can compete in multiple genres. The current model assigns one genre and globally deduplicates Spotify IDs; either curate disjoint pools or change the song/genre relationship and rating uniqueness before seeding — [#13](https://github.com/Antoine-Ric/InTunes/issues/13)
 - [ ] Decide whether MVP supports one lifetime run per user/genre or retakes. If retakes are supported, model run identity and scope votes, ratings, pair uniqueness, and profile rebuilding accordingly — [#13](https://github.com/Antoine-Ric/InTunes/issues/13)

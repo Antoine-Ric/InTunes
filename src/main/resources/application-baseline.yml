@@ -1,0 +1,5 @@
+# One-time opt-in for the pre-Flyway Hibernate scaffold database. See docs/PERSISTENCE.md.
+spring:
+  flyway:
+    baseline-on-migrate: true
+    baseline-version: 1

@@ -11,6 +11,11 @@ These steps use Docker for PostgreSQL and VS Code to launch the Spring Boot app.
 
 ## Start the app
 
+For an existing database created before Flyway was introduced, follow the
+[one-time baseline instructions](PERSISTENCE.md#existing-local-scaffold-databases)
+before normal startup. Fresh databases migrate automatically; Hibernate then
+validates the schema.
+
 1. Open Docker Desktop and wait until it is running.
 
 2. Open the `SI-TUNES` project folder in VS Code. In the integrated terminal, go to the project root:
@@ -92,6 +97,9 @@ injection, the database/schema connection, and an HTTP 200 response from the hom
 page. Testcontainers creates and removes the test database container automatically;
 the development database is not used. The first run may download container images.
 No `.env` file or live provider credentials are needed for these tests.
+
+Migration, repository, and concurrent-transaction tests also use isolated
+PostgreSQL containers. See [persistence rules and verification](PERSISTENCE.md).
 
 `EntityPersistenceTest` uses a separate PostgreSQL container to verify that all
 entity constructors support persistence and JPA reloads, and that editable fields

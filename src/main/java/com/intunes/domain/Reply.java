@@ -27,6 +27,9 @@ public class Reply {
     @Column(nullable = false)
     private boolean pinned = false;
 
+    @Version
+    private long version;
+
     @Column(nullable = false, updatable = false)
     private Instant createdAt = Instant.now();
 
@@ -43,6 +46,8 @@ public class Reply {
     public Long getId() {
         return id;
     }
+
+    public long getVersion() { return version; }
 
     public Post getPost() {
         return post;

@@ -25,7 +25,7 @@ public class Like {
     @Column(nullable = false, updatable = false)
     private Instant createdAt = Instant.now();
 
-    // TODO: enforce post xor reply with a database check constraint in #15.
+    // V2 also enforces exactly one target and unique user/target likes in PostgreSQL.
 
     protected Like() {
         // JPA
