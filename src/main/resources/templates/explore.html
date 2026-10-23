@@ -1,21 +1,55 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Explore — InTunes</title>
-    <script src="https://unpkg.com/htmx.org@2.0.4"></script>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
-</head>
+<head th:replace="~{fragments/layout :: head('Explore communities')}"></head>
 <body>
-<header><nav><a href="/">InTunes</a> | <a href="/genres">Start</a> | <a href="/explore">Explore</a></nav></header>
-<main>
-    <h1>Explore communities</h1>
-    <!-- TODO: th:each over ${communities}; card links to /community/{key} -->
-    <div class="community-grid">
-        <a href="/community/hiphop_deep_90s">Boom Bap Archaeologists</a>
-        <a href="/community/hiphop_mainstream_now">Club Architects</a>
+<div class="app">
+  <div th:replace="~{fragments/layout :: topnav('explore')}"></div>
+
+  <!-- Live data: PageController#explore should add "communities", a list of items with
+       key, genreKey, genreTag, name, blurb, members, swatch (css class), ctaLabel, ctaGhost. -->
+  <main class="view on">
+    <span class="kicker">Step 5 · Explore</span>
+    <h2 class="big">Every archetype has <em>a room.</em></h2>
+    <p class="lede">Each genre's matchup results sort listeners into archetype communities. Yours is home base. Explore is how you visit the other rooms, see what their brackets crowned, and get pulled into new genres.</p>
+    <div class="filter-row" id="filter-row">
+      <button class="active" data-filter="all">All communities</button>
+      <button data-filter="hiphop">Hip-Hop</button>
+      <button data-filter="rnb">R&amp;B</button>
+      <button data-filter="pop">Pop</button>
+      <button data-filter="rock">Rock</button>
+      <button data-filter="electronic">Electronic</button>
     </div>
-</main>
+    <div class="explore-grid" id="explore-grid">
+      <th:block th:if="${communities != null}" th:each="c : ${communities}">
+        <div th:replace="~{fragments/layout :: commCard(${c.key}, ${c.genreKey}, ${c.genreTag}, ${c.name}, ${c.blurb}, ${c.members}, ${c.swatch}, ${c.ctaLabel}, ${c.ctaGhost})}"></div>
+      </th:block>
+      <th:block th:if="${communities == null}">
+        <div th:replace="~{fragments/layout :: commCard('hiphop_deep_90s', 'hiphop', 'Hip-Hop · Your home', 'Boom Bap Archaeologists', 'Golden-age leans and deep-cut picks. Production-first listeners who crown the classics.', '1,248 members', 'sw-hiphop', 'Open board', false)}"></div>
+        <div th:replace="~{fragments/layout :: commCard('hiphop_mainstream_00s', 'hiphop', 'Hip-Hop', 'Mainstream Millennials', '2000s to 2010s chart energy. If it headlined a festival, it probably won their bracket.', '3,912 members', 'sw-hiphop', 'Visit', true)}"></div>
+        <div th:replace="~{fragments/layout :: commCard('hiphop_trap_now', 'hiphop', 'Hip-Hop', 'Trap Royalty', 'Modern, mainstream, bass-first. Their top-5 lists read like the current charts, proudly.', '2,640 members', 'sw-hiphop', 'Visit', true)}"></div>
+        <div th:replace="~{fragments/layout :: commCard('rnb_slowjam_90s', 'rnb', 'R&amp;B', 'Slow Jam Romantics', '90s groups and quiet-storm staples beat everything in their runs. Harmony over hype.', '1,875 members', 'sw-rnb', 'Visit', true)}"></div>
+        <div th:replace="~{fragments/layout :: commCard('rnb_alt_now', 'rnb', 'R&amp;B', 'Alt R&amp;B Dreamers', 'Moody, modern, low-popularity picks. Their brackets bury the hits on purpose.', '964 members', 'sw-rnb', 'Visit', true)}"></div>
+        <div th:replace="~{fragments/layout :: commCard('pop_hook_max', 'pop', 'Pop', 'Hook Maximalists', 'The biggest chorus wins, every time. Zero shame, all earworms.', '4,208 members', 'sw-pop', 'Visit', true)}"></div>
+        <div th:replace="~{fragments/layout :: commCard('rock_riff_classic', 'rock', 'Rock', 'Riff Traditionalists', 'Classic-era dominance with a soft spot for 90s alt. Guitar is non-negotiable.', '1,530 members', 'sw-rock', 'Visit', true)}"></div>
+        <div th:replace="~{fragments/layout :: commCard('electronic_warehouse', 'electronic', 'Electronic', 'Warehouse Purists', 'Underground house and techno over festival drops. The later the set, the better.', '1,102 members', 'sw-electro', 'Visit', true)}"></div>
+      </th:block>
+    </div>
+  </main>
+
+  <div th:replace="~{fragments/layout :: footer}"></div>
+</div>
+<script th:src="@{/js/app.js}"></script>
+<script>
+  document.querySelectorAll('#filter-row button').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      document.querySelectorAll('#filter-row button').forEach(function (b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      var f = btn.getAttribute('data-filter');
+      document.querySelectorAll('#explore-grid .comm-card').forEach(function (card) {
+        card.style.display = (f === 'all' || card.getAttribute('data-genre') === f) ? '' : 'none';
+      });
+    });
+  });
+</script>
 </body>
 </html>

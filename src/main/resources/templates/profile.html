@@ -1,26 +1,99 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your profile — InTunes</title>
-    <script src="https://unpkg.com/htmx.org@2.0.4"></script>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
-</head>
+<head th:replace="~{fragments/layout :: head('My music profile')}"></head>
 <body>
-<header><nav><a href="/">InTunes</a> | <a href="/genres">Start</a> | <a href="/explore">Explore</a></nav></header>
-<main>
-    <!-- TODO: bind ${profile.archetypeName}, ${topSongs}, ${pinnedReply} -->
-    <p class="eyebrow">Your music profile</p>
-    <h1>Boom Bap Archaeologist</h1><!-- th:text=${profile.archetypeName} -->
-    <h2>Top songs</h2>
-    <ol>
-        <li>Song one</li><!-- th:each over ${topSongs} -->
-    </ol>
-    <h2>Pinned</h2>
-    <blockquote>Your pinned comment lives here.</blockquote><!-- th:if=${pinnedReply} -->
-    <a href="/community/hiphop_deep_90s"><button>Meet your community</button></a>
-    <button>Share my profile</button><!-- TODO: share card -->
-</main>
+<div class="app">
+  <div th:replace="~{fragments/layout :: topnav('profile')}"></div>
+
+  <!-- Live data: PageController#profile should add "profile" (TasteProfile: archetypeName,
+       archetypeKey, genre), "topSongs" (list of title, artist, releaseYear, rating),
+       and "pinnedReplies" (list of body, from). Demo content renders when absent. -->
+  <main class="view on">
+    <span class="kicker">Step 3 · Music profile</span>
+    <h2 class="big" style="font-size:clamp(24px,3.4vw,34px)">This is what your picks <em>say about you.</em></h2>
+    <div class="profile-grid">
+      <div class="arch-card">
+        <div class="who">
+          <span class="avatar-dot">R</span>
+          <div>
+            <b style="font-size:16px">@ricardi</b>
+            <span style="display:block;font-size:12.5px;color:var(--app-ink-2)"
+                  th:text="${profile != null ? 'Your ' + profile.genre + ' archetype' : 'Hip-Hop profile · unlocked Oct 2026'}">Hip-Hop profile · unlocked Oct 2026</span>
+          </div>
+        </div>
+        <span class="kicker">Your archetype</span>
+        <h3 th:text="${profile != null ? profile.archetypeName : 'Boom Bap Archaeologist'}">Boom Bap Archaeologist</h3>
+        <p th:if="${profile == null}">You dig for the originals. Given a modern hit and a 90s cornerstone, you kept the cornerstone almost every time, and your deep-cut picks say you were crate-digging long before this app.</p>
+        <div class="trait"><span>Era lean</span><b>1990s · Golden age</b></div>
+        <div class="trait"><span>Popularity lean</span><b>Deep cuts over chart hits</b></div>
+        <div class="trait"><span>How it is named</span><b>Era × popularity matrix</b></div>
+        <div class="trait"><span>Your community</span><b>Boom Bap Archaeologists</b></div>
+        <div class="row" style="margin-top:20px">
+          <a class="btn small" th:href="@{/community/{key}(key=${profile != null ? profile.archetypeKey : 'hiphop_deep_90s'})}">Enter your community</a>
+          <button class="btn ghost small" id="share-btn">Copy share text</button>
+        </div>
+        <p style="margin:14px 0 0;font-size:12.5px">The card above is the shareable result, designed to be screenshotted and posted. It is the growth loop.</p>
+      </div>
+      <div>
+        <div class="panel" style="margin-bottom:14px">
+          <h3>Your ranked songs</h3>
+          <p>Final Elo order after 16 rounds. This list is the raw taste data behind the archetype.</p>
+          <ol class="rank-list">
+            <th:block th:if="${topSongs != null}" th:each="s, iter : ${topSongs}">
+              <li>
+                <span class="rank-num" th:text="${iter.index + 1}">1</span>
+                <div class="rank-song"><b th:text="${s.title}">Title</b><span th:text="${s.artist + ' · ' + s.releaseYear}">Artist · Year</span></div>
+                <span class="elo"><span th:text="${#numbers.formatDecimal(s.rating, 1, 0)}">1500</span><small>ELO</small></span>
+              </li>
+            </th:block>
+            <th:block th:if="${topSongs == null}">
+              <li><span class="rank-num">1</span><div class="rank-song"><b>N.Y. State of Mind</b><span>Nas · 1994</span></div><span class="elo">1612<small>ELO</small></span></li>
+              <li><span class="rank-num">2</span><div class="rank-song"><b>Electric Relaxation</b><span>A Tribe Called Quest · 1993</span></div><span class="elo">1588<small>ELO</small></span></li>
+              <li><span class="rank-num">3</span><div class="rank-song"><b>Ms. Jackson</b><span>Outkast · 2000</span></div><span class="elo">1551<small>ELO</small></span></li>
+              <li><span class="rank-num">4</span><div class="rank-song"><b>Alright</b><span>Kendrick Lamar · 2015</span></div><span class="elo">1529<small>ELO</small></span></li>
+              <li><span class="rank-num">5</span><div class="rank-song"><b>Doo Wop (That Thing)</b><span>Lauryn Hill · 1998</span></div><span class="elo">1504<small>ELO</small></span></li>
+            </th:block>
+          </ol>
+        </div>
+        <div class="panel">
+          <h3>Pinned to your profile</h3>
+          <p>Comments from your community board that you pinned, they live here for anyone visiting your profile.
+            <b style="color:var(--app-ink)" id="pin-count" th:text="${pinnedReplies != null ? #lists.size(pinnedReplies) + ' pinned' : '2 pinned'}">2 pinned</b></p>
+          <div id="pinned-list">
+            <th:block th:if="${pinnedReplies != null}" th:each="pr : ${pinnedReplies}">
+              <div class="pin-item">
+                <svg class="pin-flag" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M16 3a1 1 0 0 1 .7 1.7L14 7.4V11h3a1 1 0 0 1 .7 1.7l-5 6A1 1 0 0 1 11 18V6.4L8.3 3.7A1 1 0 0 1 9 2h6a1 1 0 0 1 1 1Z" transform="rotate(35 12 12)"/></svg>
+                <div><p th:text="${pr.body}">Pinned comment</p><div class="from" th:text="${pr.from}">Source</div></div>
+              </div>
+            </th:block>
+            <th:block th:if="${pinnedReplies == null}">
+              <div class="pin-item">
+                <svg class="pin-flag" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M16 3a1 1 0 0 1 .7 1.7L14 7.4V11h3a1 1 0 0 1 .7 1.7l-5 6A1 1 0 0 1 11 18V6.4L8.3 3.7A1 1 0 0 1 9 2h6a1 1 0 0 1 1 1Z" transform="rotate(35 12 12)"/></svg>
+                <div><p>"Illmatic is not just the best debut, it is the blueprint. Fight me."</p><div class="from">Your post · Boom Bap Archaeologists · 48 likes</div></div>
+              </div>
+              <div class="pin-item">
+                <svg class="pin-flag" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M16 3a1 1 0 0 1 .7 1.7L14 7.4V11h3a1 1 0 0 1 .7 1.7l-5 6A1 1 0 0 1 11 18V6.4L8.3 3.7A1 1 0 0 1 9 2h6a1 1 0 0 1 1 1Z" transform="rotate(35 12 12)"/></svg>
+                <div><p>"Tribe over everything. Electric Relaxation is a perfect song, no skips in either direction."</p><div class="from">Reply by @maya_beats · pinned by you</div></div>
+              </div>
+            </th:block>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div th:replace="~{fragments/layout :: footer}"></div>
+</div>
+<script th:src="@{/js/app.js}"></script>
+<script th:inline="javascript">
+  document.getElementById('share-btn').addEventListener('click', function () {
+    var text = /*[[${shareText}]]*/ 'My InTunes Hip-Hop profile: Boom Bap Archaeologist. Top song: N.Y. State of Mind by Nas. Find your sound, find your people.';
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(
+        function () { window.InTunes.toast('Share text copied. This card is the screenshot-friendly version.'); },
+        function () { window.InTunes.toast(text); });
+    } else { window.InTunes.toast(text); }
+  });
+</script>
 </body>
 </html>

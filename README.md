@@ -1,4 +1,4 @@
-# InTunes (SI-TUNES) — MVP scaffold
+# InTunes — MVP scaffold
 
 Music taste profiling through head-to-head song matchups. Vote in this-vs-that
 rounds, get a named music profile, land in a community of people who hear
@@ -6,16 +6,9 @@ music like you do.
 
 ## Run it
 
-Prereqs: Java 21, Docker.
-
-```bash
-docker compose up -d          # Postgres on localhost:5432 (situnes/situnes)
-export SPOTIFY_CLIENT_ID=...  # from https://developer.spotify.com/dashboard
-export SPOTIFY_CLIENT_SECRET=...
-./mvnw spring-boot:run         # or: mvn spring-boot:run
-```
-
-Open http://localhost:8080
+Follow the [local startup guide](docs/RUN_LOCALLY.md) for prerequisites,
+PostgreSQL setup, loading `.env` secrets with VS Code, launching the app,
+and stopping it when finished.
 
 ## Data sources (important)
 

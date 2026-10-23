@@ -1,25 +1,32 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pick a genre — InTunes</title>
-    <script src="https://unpkg.com/htmx.org@2.0.4"></script>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
-</head>
+<head th:replace="~{fragments/layout :: head('Pick a genre')}"></head>
 <body>
-<header><nav><a href="/">InTunes</a> | <a href="/genres">Start</a> | <a href="/explore">Explore</a></nav></header>
-<main>
-    <h1>Pick your arena</h1>
-    <!-- TODO: th:each over ${genres}; each card links to /matchup?genre=${g.key} -->
+<div class="app">
+  <div th:replace="~{fragments/layout :: topnav('genres')}"></div>
+
+  <!-- Live data: PageController#genres should add "genres", a list of items with
+       key, name, blurb, swatch (css class), meta, status fields. -->
+  <main class="view on">
+    <span class="kicker">Step 1 · Genre select</span>
+    <h2 class="big">Pick a genre.<br>We bring <em>the songs.</em></h2>
+    <p class="lede">Each genre is seeded with 25 songs spanning eras and popularity: underground staples next to chart-toppers. Your picks across that spread are what name your profile. Choosing a genre drops you straight into the arena.</p>
     <div class="genre-grid">
-        <a href="/matchup?genre=hiphop">Hip-Hop</a>
-        <a href="/matchup?genre=rnb">R&amp;B</a>
-        <a href="/matchup?genre=afrobeats">Afrobeats</a>
-        <a href="/matchup?genre=pop">Pop</a>
-        <a href="/matchup?genre=rock">Rock</a>
-        <a href="/matchup?genre=latin">Latin</a>
+      <th:block th:if="${genres != null}" th:each="g : ${genres}">
+        <div th:replace="~{fragments/layout :: genreCard(${g.key}, ${g.name}, ${g.blurb}, ${g.swatch}, ${g.meta}, ${g.status})}"></div>
+      </th:block>
+      <th:block th:if="${genres == null}">
+        <div th:replace="~{fragments/layout :: genreCard('hiphop', 'Hip-Hop', 'Boom bap to trap, coast to coast. The deepest seed list in the app.', 'sw-hiphop', '25 songs · 16 rounds', 'Your profile ✓')}"></div>
+        <div th:replace="~{fragments/layout :: genreCard('rnb', 'R&amp;B', 'Slow jams, 90s groups, and the new wave of alt R&amp;B.', 'sw-rnb', '25 songs · 16 rounds', '9 / 16 played')}"></div>
+        <div th:replace="~{fragments/layout :: genreCard('pop', 'Pop', 'Hooks engineered in a lab. Which ones survive your bracket?', 'sw-pop', '25 songs · 16 rounds', 'Not started')}"></div>
+        <div th:replace="~{fragments/layout :: genreCard('rock', 'Rock', 'Classic riffs against indie staples and 2000s alt anthems.', 'sw-rock', '25 songs · 16 rounds', 'Not started')}"></div>
+        <div th:replace="~{fragments/layout :: genreCard('electronic', 'Electronic', 'House, techno, and festival-sized drops, head to head.', 'sw-electro', '25 songs · 16 rounds', 'Not started')}"></div>
+      </th:block>
     </div>
-</main>
+  </main>
+
+  <div th:replace="~{fragments/layout :: footer}"></div>
+</div>
+<script th:src="@{/js/app.js}"></script>
 </body>
 </html>
