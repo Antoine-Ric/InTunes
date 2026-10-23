@@ -24,5 +24,37 @@ public class Post {
     @Column(nullable = false, updatable = false)
     private Instant createdAt = Instant.now();
 
-    // TODO: getters/setters
+    protected Post() {
+        // JPA
+    }
+
+    public Post(Community community, User author, String body) {
+        this.community = community;
+        this.author = author;
+        this.body = body;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public Community getCommunity() {
+        return community;
+    }
+
+    public User getAuthor() {
+        return author;
+    }
+
+    public String getBody() {
+        return body;
+    }
+
+    public void setBody(String body) {
+        this.body = body;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
 }

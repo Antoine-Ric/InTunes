@@ -2,6 +2,7 @@ package com.intunes.domain;
 
 import jakarta.persistence.*;
 import java.time.Instant;
+import java.util.Objects;
 
 /** A like on either a post or a reply (exactly one must be set). */
 @Entity
@@ -24,5 +25,39 @@ public class Like {
     @Column(nullable = false, updatable = false)
     private Instant createdAt = Instant.now();
 
-    // TODO: getters/setters, plus a check constraint (post xor reply) in a migration later
+    // TODO: enforce post xor reply with a database check constraint in #15.
+
+    protected Like() {
+        // JPA
+    }
+
+    public Like(User user, Post post) {
+        this.user = Objects.requireNonNull(user, "user");
+        this.post = Objects.requireNonNull(post, "post");
+    }
+
+    public Like(User user, Reply reply) {
+        this.user = Objects.requireNonNull(user, "user");
+        this.reply = Objects.requireNonNull(reply, "reply");
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public Post getPost() {
+        return post;
+    }
+
+    public Reply getReply() {
+        return reply;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
 }

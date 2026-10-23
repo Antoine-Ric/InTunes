@@ -21,5 +21,39 @@ public class Community {
     @Column(length = 500)
     private String description;
 
-    // TODO: getters/setters. Member count can be derived (count profiles) — no column needed for MVP.
+    // Member count is derived from profiles, rather than stored here.
+
+    protected Community() {
+        // JPA
+    }
+
+    public Community(String archetypeKey, String name, String description) {
+        this.archetypeKey = archetypeKey;
+        this.name = name;
+        this.description = description;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getArchetypeKey() {
+        return archetypeKey;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 }

@@ -14,7 +14,7 @@ public class User {
     @Column(nullable = false, unique = true, length = 50)
     private String username;
 
-    // TODO: store BCrypt hash, never plaintext
+    /** Already encoded password; hashing belongs to the registration service. */
     @Column(nullable = false)
     private String passwordHash;
 
@@ -24,5 +24,41 @@ public class User {
     @Column(nullable = false, updatable = false)
     private Instant createdAt = Instant.now();
 
-    // TODO: getters/setters (or Lombok @Getter/@Setter — your call)
+    protected User() {
+        // JPA
+    }
+
+    public User(String username, String passwordHash, String displayName) {
+        this.username = username;
+        this.passwordHash = passwordHash;
+        this.displayName = displayName;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getPasswordHash() {
+        return passwordHash;
+    }
+
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
 }

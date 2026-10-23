@@ -93,6 +93,11 @@ page. Testcontainers creates and removes the test database container automatical
 the development database is not used. The first run may download container images.
 No `.env` file or live provider credentials are needed for these tests.
 
+`EntityPersistenceTest` uses a separate PostgreSQL container to verify that all
+entity constructors support persistence and JPA reloads, and that editable fields
+can be updated without replacing IDs or creation timestamps. `LikeTest` checks
+that a like requires an owner and a non-null post or reply target.
+
 To run just the startup regression tests:
 
 ```bash

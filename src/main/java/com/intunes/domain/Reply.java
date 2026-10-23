@@ -30,5 +30,45 @@ public class Reply {
     @Column(nullable = false, updatable = false)
     private Instant createdAt = Instant.now();
 
-    // TODO: getters/setters
+    protected Reply() {
+        // JPA
+    }
+
+    public Reply(Post post, User author, String body) {
+        this.post = post;
+        this.author = author;
+        this.body = body;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public Post getPost() {
+        return post;
+    }
+
+    public User getAuthor() {
+        return author;
+    }
+
+    public String getBody() {
+        return body;
+    }
+
+    public void setBody(String body) {
+        this.body = body;
+    }
+
+    public boolean isPinned() {
+        return pinned;
+    }
+
+    public void setPinned(boolean pinned) {
+        this.pinned = pinned;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
 }
