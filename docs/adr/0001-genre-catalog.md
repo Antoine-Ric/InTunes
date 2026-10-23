@@ -48,10 +48,8 @@ matching the existing scaffold convention (`hiphop`, not `hip-hop`).
   change. Removing a genre that users already hold profiles in needs a data
   decision at that time; it is not handled here.
 
-## Still open from issue #13
+## Also decided under issue #13
 
-These get their own ADRs when decided:
-
-- **ADR-0002 (pending):** whether a song can compete in more than one genre.
-- **ADR-0003 (pending):** whether a user gets one lifetime run per genre or can
-  retake a genre.
+- [ADR-0002](0002-song-genre-membership.md): a song belongs to exactly one genre.
+- [ADR-0003](0003-run-lifecycle-retakes.md): retakes are supported; every run
+  has its own identity.
